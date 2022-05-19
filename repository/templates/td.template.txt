@@ -1,0 +1,55 @@
+@require(id,prefixes,types,description,properties)
+{
+    "@@context": [
+    "https://www.w3.org/2019/wot/td/v1",
+    {
+        @for prefix in prefixes:
+            "@prefix['name']": "@prefix['href'])",
+        @end
+    }
+
+    ],
+    "id": "@id", 
+    
+    @if len(types)==1:
+        @for type in types:
+            "@@type": "@type",
+        @end
+        "@@type": "@type",
+    @else:
+        "@@type": [
+            @for type in types:
+                "@type",
+            @end
+        ],
+    @endif
+    "description": "@description", 
+    "properties": {
+        @for property in properties:
+            "@property['name']":{
+                "forms": [
+                    {
+                    @if 'href' in property and 'type' in property:
+                        "href": "@property['href']",
+                        "type": "@property['type']"
+                    @elif 'href' in property and 'type' not in property:
+                        "href": "@property['href']"
+                    @elif 'href' not in property and 'type' in property:
+                        "type": "@property['type']"
+                    @end
+                    }
+                ]
+            },
+        @end
+    },
+    "security": [
+        "no_sec"
+    ],
+    "securityDefinitions": {
+        "no_sec": {
+            "scheme": "none"
+        }
+    },
+    "title": "@id"
+    
+}
