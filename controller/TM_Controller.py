@@ -1,5 +1,5 @@
 import json
-
+import uuid
 
 class TM_Controller:
     def __init__(self, id, request, event_controller):
@@ -7,7 +7,15 @@ class TM_Controller:
         self.request = request
         self.json_data = None
         self.event_controller = event_controller
+        self.valid_id = self.is_valid_uuid(id)
         self.response = None
+
+    def is_valid_uuid(self, value):
+        try:
+            uuid.UUID(value, version=4)
+            return True
+        except:
+            return False
 
     def get_project(self):
         pass

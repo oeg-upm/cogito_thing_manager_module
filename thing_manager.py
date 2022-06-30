@@ -5,6 +5,7 @@ from flask_sse import sse
 from apscheduler.schedulers.background import BackgroundScheduler
 from controller.Event_contoller import EventController
 from controller.TM_Controller import TM_Controller
+from controller.Error_Controller import Error_Controller
 import sys
 sys.stdout.flush()
 
@@ -27,8 +28,13 @@ def create_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    controller.project_definition(action="create")
-    return "Created project with id: " + id
+    if controller.valid_id:
+        controller.project_definition(action="create")
+        return "Created project with id: " + id
+    else:
+        error_controller = Error_Controller(id, "project", "create", "Invalid id, the id must be a valid uuid", event_controller)
+        error_controller.publish_error()
+        return "Invalid id, the id must be a valid uuid"
 
 @app.route("/project/<id>", methods=['PUT'])
 def update_project(id):
@@ -37,9 +43,12 @@ def update_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    controller.project_definition(action="update")
-    # execute update? --> carry action from wrapper to TM again and then handle with another service, like post or put?
-    return "Updated project with id: " + id
+    if controller.valid_id:
+        controller.project_definition(action="update")
+        # execute update? --> carry action from wrapper to TM again and then handle with another service, like post or put?
+        return "Updated project with id: " + id
+    else:
+        return "Invalid id, the id must be a valid uuid"
 
 @app.route("/project/<id>", methods=['DELETE'])
 def delete_project(id):
@@ -55,11 +64,14 @@ def add_file_to_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    controller.add_file(action="file_addition")
-    if controller.response is not None:
-        return controller.response
+    if controller.valid_id:
+        controller.add_file(action="file_addition")
+        if controller.response is not None:
+            return controller.response
+        else:
+            return "Added file/s to project with id: " + id
     else:
-        return "Added file/s to project with id: " + id
+        return "Invalid id, the id must be a valid uuid"
 
 @app.route("/project/<id>/file", methods=['DELETE'])
 def delete_file_from_project(id):
@@ -76,36 +88,33 @@ def process_project_ttl(id):
     print(str(request.data))
     return "Process project ttl with id: " + id
 
-@app.route("/project/<id>/file/ttl", methods=['POST'])
-def process_file_ttl(id):
+@app.route("/project/<id>/<file_type>/<file_id>/ttl", methods=['POST'])
+def process_file_ttl(id, file_type, file_id):
     """
     Retrieves from KGG the respective ttl file generated, saves it into the triple store and also generate respective thing descriptions for specific elements of the graph
     """
-    return "TTL file retrieved with id: " + id
+    print(str(request.data))
+    return "TTL file retrieved with id: " + id + "\n file_type: " + file_type + "\n file_id: " + file_id
 
-@app.route("/project/<id>/error", methods=['POST'])
-def process_project_wrapper_error(id):
+@app.route("/project/<id>/wrapper_error", methods=['POST'])
+def process_wrapper_error(id):
     """
     Handle wrapper error ocurred during the process of wrapper execution (json format)
     """
-    return "Wrapper error ocurred transforming project with id: " + id
+    print(str(request.data))
+    #return "Wrapper error ocurred in project with id: " + id
+    return request.data
 
-@app.route("/project/<id>/file/error", methods=['POST'])
-def process_file_wrapper_error(id):
-    """
-    Handle wrapper error ocurred during the process of wrapper execution (json format)
-    """
-    return "Wrapper error ocurred transforming file from project id: " + id
 
-# Example of a route for sse events publisher
-@app.route('/send')
-def send_message():
-    """
-    Send message to the client
-    """
-    controller = EventController(sse)
-    controller.publish_message("project","created","{'hello':'world'}", "publish", "analytics")
-    return "Message sent"
+#Example of a route for sse events publisher
+# @app.route('/send')
+# def send_message():
+#     """
+#     Send message to the client
+#     """
+#     controller = EventController(sse)
+#     controller.publish_message("project","created","{'hello':'world'}", "publish", "analytics")
+#     return "Message sent"
 
 
 if __name__ == '__main__':
