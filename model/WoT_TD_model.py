@@ -5,17 +5,19 @@ from wheezy.template.ext.core import CoreExtension
 from wheezy.template.loader import FileLoader
 
 class TD:
-    def __init__(self, id):
+    def __init__(self, id, file_id = None):
         self.__id = {"id" : id} # None
+        self.__file_id = file_id # None
         self.__prefixes = {"prefixes" : []} # List of dicts
         self.__types = {"types" : []} # List
+        self.__title = {"title" : None} # None
         self.__description = {"description" : None} # None
         self.__properties = {"properties" : []} # List of dicts
         self.__actions = {"actions" : []} # List of dicts
         self.__events = {"events" : []} # List of dicts
         self.__links = {"links" : []} # List of dicts
         self.__security = {"security" : None} # List of dicts
-        self.__template_path = "./repository/templates/"
+        self.__template_path = "./templates/"
         self.__template_name = "td.template.txt"
         self.__render_info = {}
     
@@ -25,6 +27,7 @@ class TD:
         """
         self.__render_info = {
             **self.get_id(),
+            **self.get_title(),
             **self.get_prefixes(),
             **self.get_types(),
             **self.get_description(),
@@ -39,6 +42,18 @@ class TD:
         Get info to render the template
         """
         return self.__render_info
+    
+    def set_title(self, title):
+        """
+        Set title of the TD
+        """
+        self.__title["title"] = title
+
+    def get_title(self):
+        """
+        Get title of the TD
+        """
+        return self.__title
 
     def set_properties(self, properties):
         """
@@ -141,13 +156,19 @@ class TD:
         """
         Set id of the TD
         """
-        self.__id["id"].update(id)
+        self.__id = {"id" : id}
 
     def get_id(self):
         """
         Get id of the TD
         """
         return self.__id
+
+    def get_file_id(self):
+        """
+        Get file id of the TD
+        """
+        return self.__file_id
 
     def get_template_path(self): # +1
         """

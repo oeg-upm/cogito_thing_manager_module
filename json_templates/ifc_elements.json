@@ -1,0 +1,38 @@
+{
+    "sparql" : "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> PREFIX bot: <https://w3id.org/bot#> PREFIX props: <https://w3id.org/props#> SELECT DISTINCT ?s ?id ?label WHERE { ?s a bot:Element . ?s props:hasCompressedGuid ?id . ?s rdfs:label ?label}",
+    "thing_description" : {
+        "id" : " ?? id ?? ",
+        "prefixes" : [
+            {
+                "name" : "facility",
+                "href" : "https://cogito.iot.linkeddata.es/def/facility#"
+            },
+            {
+                "name" : "bot",
+                "href" : "https://w3id.org/bot#"
+            }
+        ],
+        "type" : "bot:Element",
+        "title" : " ?? label ?? ",
+        "description" : "Element from IFC File",
+
+        "properties" : [
+            {
+                "name": "KnowledgeGraph",
+                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "type": "text/turtle"
+            },
+            {
+                "name" : "ValueInGraph",
+                "href" : " ?? s ?? ",
+                "type" : "text/turtle"
+            }
+        ],
+
+        "actions" : [],
+
+        "events" : [],
+
+        "links" : []
+    }
+}

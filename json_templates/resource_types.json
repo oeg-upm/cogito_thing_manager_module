@@ -1,0 +1,35 @@
+{
+    "sparql" : "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }",
+    "thing_description" : {
+        "id" : "",
+        "prefixes" : [
+            {
+                "name" : "resource",
+                "href" : "https://cogito.iot.linkeddata.es/def/resource#"
+            }
+        ],
+        "type" : "resource:ResourceType",
+        "title" : "Resource Types File",
+        "description" : "Resource types file associated to project",
+
+        "properties" : [
+            {
+                "name": "KnowledgeGraph",
+                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "type": "text/turtle"
+            }
+        ],
+
+        "actions" : [],
+
+        "events" : [],
+
+        "links" : [
+            {
+                "rel" : "facility:Project",
+                "href" : "https://data.cogito.linkeddata.es/api/things/ !! external_id !! ",
+                "type" : "application/td+json"
+            }
+        ]
+    }
+}

@@ -51,24 +51,13 @@ class TM_Controller:
             self.file_type_analysis(self.json_data, action)
 
     def file_type_analysis(self, file, action):
-        if file["type"] == "ifc":
+        channel = self.event_controller.retrieve_channel(file["type"])
+        if channel != "error":
             self.event_controller.publish_message("file",
                                                     action,
                                                     json.dumps(file),
                                                     "publish",
-                                                    "file.ifc")
-        elif file["type"] == "schedule":
-            self.event_controller.publish_message("file",
-                                                    action,
-                                                    json.dumps(file),
-                                                    "publish",
-                                                    "file.schedule")
-        elif file["type"] == "visual_qc":
-            self.event_controller.publish_message("file",
-                                                    action,
-                                                    json.dumps(file),
-                                                    "publish",
-                                                    "file.visual_qc")
+                                                    channel)
         else:
             self.response = "File type not supported: " + file["type"]
             self.event_controller.publish_message("file",
@@ -78,7 +67,7 @@ class TM_Controller:
                                                         "file_type" : file["type"]
                                                     }),
                                                     "publish",
-                                                    "error")
+                                                    channel)
 
     def delete_file_from_project(self):
         # Call Triple Store Controller

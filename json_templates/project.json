@@ -1,0 +1,34 @@
+{
+    "sparql" : "PREFIX facility: <https://cogito.iot.linkeddata.es/def/facility#> SELECT ?s ?type ?description ?title ?id WHERE { ?s a facility:Project . ?s a ?type . ?s facility:hasDescription ?description . ?s facility:hasName ?title . ?s facility:projectID ?id.}",
+    "thing_description" : {
+        "id" : " ?? id ?? ",
+        "prefixes" : [
+            {
+                "name" : "facility",
+                "href" : "https://cogito.iot.linkeddata.es/def/facility#"
+            }
+        ],
+        "type" : " ?? type ?? ",
+        "title" : " ?? title ?? ",
+        "description" : " ?? description ?? ",
+
+        "properties" : [
+            {
+                "name": "KnowledgeGraph",
+                "href": "https://data.cogito.linkeddata.es/resources/ ?? id ?? ",
+                "type": "text/turtle"
+            },
+            {
+                "name": "ValueInGraph",
+                "href": " ?? s ?? ",
+                "type": "text/turtle"
+            }
+        ],
+
+        "actions" : [],
+
+        "events" : [],
+
+        "links" : []
+    }
+}

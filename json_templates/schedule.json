@@ -1,0 +1,40 @@
+{
+    "sparql" : "PREFIX facility: <https://cogito.iot.linkeddata.es/def/facility#> SELECT DISTINCT ?s WHERE { ?s facility:isRelatedToProcess ?o . }",
+    "thing_description" : {
+        "id" : "",
+        "prefixes" : [
+            {
+                "name" : "process",
+                "href" : "https://cogito.iot.linkeddata.es/def/process#"
+            }
+        ],
+        "type" : "process:Process",
+        "title" : "Schedule File",
+        "description" : "Schedule file associated to project",
+
+        "properties" : [
+            {
+                "name": "KnowledgeGraph",
+                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "type": "text/turtle"
+            },
+            {
+                "name" : "RelatedToProject",
+                "href" : " ?? s ?? ",
+                "type" : "text/turtle"
+            }
+        ],
+
+        "actions" : [],
+
+        "events" : [],
+
+        "links" : [
+            {
+                "rel" : "facility:Project",
+                "href" : "https://data.cogito.linkeddata.es/api/things/ !! external_id !! ",
+                "type" : "application/td+json"
+            }
+        ]
+    }
+}

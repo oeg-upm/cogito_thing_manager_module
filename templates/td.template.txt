@@ -1,0 +1,228 @@
+@require(title,id,prefixes,types,description, properties,actions,events,links)
+{
+    "@@context": [
+    "https://www.w3.org/2019/wot/td/v1",
+    {
+        @for prefix in prefixes:
+            "@prefix['name']": "@prefix['href']",
+        @end
+    }
+
+    ],
+    "title" : "@title",
+    "id": "@id",
+    "types" : "@types",
+    "description": "@description", 
+    "properties": {
+        @if len(properties)!=0:
+            @for property in properties:
+                @if isinstance(property[next(iter(property))], list):
+                    "@property[next(iter(property))][0]['name']":{
+                        "forms": [
+                    @for elem in property[next(iter(property))]:
+                        @if elem == property[next(iter(property))][-1]:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            }
+                        @else:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            },
+                        @endif
+                    @end
+                        ]
+                    },
+                @else:
+                    "@property['name']":{
+                        "forms": [
+                            {
+                            @if 'href' in property and 'type' in property:
+                                "href": "@property['href']",
+                                "type": "@property['type']"
+                            @elif 'href' in property and 'type' not in property:
+                                "href": "@property['href']"
+                            @elif 'href' not in property and 'type' in property:
+                                "type": "@property['type']"
+                            @end
+                            }
+                        ]
+                    },
+                @endif
+            @end
+        @endif
+    },
+    "actions": {
+        @if len(actions)!=0:
+            @for action in actions:
+                @if isinstance(action[next(iter(action))], list):
+                    "@action[next(iter(action))][0]['name']":{
+                        "forms": [
+                    @for elem in action[next(iter(action))]:
+                        @if elem == action[next(iter(action))][-1]:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            }
+                        @else:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            },
+                        @endif
+                    @end
+                        ]
+                    },
+                @else:
+                    "@action['name']":{
+                        "forms": [
+                            {
+                            @if 'href' in action and 'type' in action:
+                                "href": "@action['href']",
+                                "type": "@action['type']"
+                            @elif 'href' in action and 'type' not in action:
+                                "href": "@action['href']"
+                            @elif 'href' not in action and 'type' in action:
+                                "type": "@action['type']"
+                            @end
+                            }
+                        ]
+                    },
+                @endif
+            @end
+        @endif
+    },
+    "events": {
+        @if len(events)!=0:
+            @for event in events:
+                @if isinstance(event[next(iter(event))], list):
+                    "@event[next(iter(event))][0]['name']":{
+                        "forms": [
+                    @for elem in event[next(iter(event))]:
+                        @if elem == event[next(iter(event))][-1]:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            }
+                        @else:
+                            {
+                                @if 'href' in elem and 'type' in elem:
+                                    "href": "@elem['href']",
+                                    "type": "@elem['type']"
+                                @elif 'href' in elem and 'type' not in elem:
+                                    "href": "@elem['href']"
+                                @elif 'href' not in elem and 'type' in elem:
+                                    "type": "@elem['type']"
+                                @end
+                            },
+                        @endif
+                    @end
+                        ]
+                    },
+                @else:
+                    "@event['name']":{
+                        "forms": [
+                            {
+                            @if 'href' in event and 'type' in event:
+                                "href": "@event['href']",
+                                "type": "@event['type']"
+                            @elif 'href' in event and 'type' not in event:
+                                "href": "@event['href']"
+                            @elif 'href' not in event and 'type' in event:
+                                "type": "@property['type']"
+                            @end
+                            }
+                        ]
+                    },
+                @endif
+            @end
+        @endif
+    },
+    "links": [
+        @if len(links)!=0:
+            @for link in links:
+                @if link == links[-1]:
+                    {
+                        @if 'href' in link and 'type' in link and 'rel' in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']",
+                            "type": "@link['type']"
+                        @elif 'href' in link and 'type' in link and 'rel' not in link:
+                            "href": "@link['href']", "type": "@link['type']"
+                        @elif 'href' in link and 'type' not in link and 'rel' in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']"
+                        @elif 'href' in link and 'type' not in link and 'rel' not in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']"
+                        @elif 'href' not in link and 'type' in link and 'rel' in link:
+                            "type": "@link['type']"
+                        @elif 'href' not in link and 'type' in link and 'rel' not in link:
+                            "type": "@link['type']"
+                        @end
+                    }
+                @else:
+                    {
+                        @if 'href' in link and 'type' in link and 'rel' in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']",
+                            "type": "@link['type']"
+                        @elif 'href' in link and 'type' in link and 'rel' not in link:
+                            "href": "@link['href']", "type": "@link['type']"
+                        @elif 'href' in link and 'type' not in link and 'rel' in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']"
+                        @elif 'href' in link and 'type' not in link and 'rel' not in link:
+                            "rel": "@link['rel']",
+                            "href": "@link['href']"
+                        @elif 'href' not in link and 'type' in link and 'rel' in link:
+                            "type": "@link['type']"
+                        @elif 'href' not in link and 'type' in link and 'rel' not in link:
+                            "type": "@link['type']"
+                        @end
+                    },
+                @endif
+            @end
+        @endif
+    ],
+    "security": [
+        "nosec_sc"
+    ],
+    "securityDefinitions": {
+        "nosec_sc": {
+            "scheme": "nosec"
+        }
+    }
+    
+}

@@ -1,0 +1,39 @@
+{
+    "sparql" : "SELECT DISTINCT ?s ?id WHERE { ?s a <https://w3id.org/bot#Element> . ?s <https://w3id.org/props#hasCompressedGuid> ?id .}",
+    "thing_description" : {
+        "id" : "",
+        "prefixes" : [
+            {
+                "name" : "facility",
+                "href" : "https://cogito.iot.linkeddata.es/def/facility#"
+            },
+            {
+                "name" : "bot",
+                "href" : "https://w3id.org/bot#"
+            }
+        ],
+        "type" : "IFC",
+        "title" : "IFC File",
+        "description" : "IFC File",
+
+        "properties" : [
+            {
+                "name": "KnowledgeGraph",
+                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "type": "text/turtle"
+            }
+        ],
+
+        "actions" : [],
+
+        "events" : [],
+
+        "links" : [
+            {
+                "rel" : "bot:Element",
+                "href" : "https://data.cogito.linkeddata.es/api/things/ !! multiple !! ?? id ?? ",
+                "type" : "application/td+json"
+            }
+        ]
+    }
+}

@@ -17,7 +17,6 @@ class TripleStore_Controller:
         self.graph = self.graph.serialize(format="nt")
 
     def create_graph(self):
-        self.serialize_graph()
         self.sparql_endpoint.method = "POST"
         self.sparql_endpoint.setHTTPAuth("DIGEST")
         self.sparql_endpoint.setCredentials("admin", "admin")

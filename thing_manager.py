@@ -6,6 +6,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from controller.Event_contoller import EventController
 from controller.TM_Controller import TM_Controller
 from controller.Error_Controller import Error_Controller
+from controller.WoT_Hive_Controller import WoT_Hive_Controller
+from controller.TD_Generator_Controller import TD_Generator_Controller
+from controller.TripleStore_Controller import TripleStore_Controller
 import sys
 sys.stdout.flush()
 
@@ -28,13 +31,18 @@ def create_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    if controller.valid_id:
-        controller.project_definition(action="create")
-        return "Created project with id: " + id
+    tdd = WoT_Hive_Controller()
+    if not tdd.get_td(id):
+        if controller.valid_id:
+            controller.project_definition(action="create")
+            return "Created project with id: " + id
+        else:
+            error_controller = Error_Controller(id, "project", "create", "Invalid id, the id must be a valid uuid", event_controller)
+            error_controller.publish_error()
+            return "Invalid id, the id must be a valid uuid"
     else:
-        error_controller = Error_Controller(id, "project", "create", "Invalid id, the id must be a valid uuid", event_controller)
-        error_controller.publish_error()
-        return "Invalid id, the id must be a valid uuid"
+        return "Project already exists"
+
 
 @app.route("/project/<id>", methods=['PUT'])
 def update_project(id):
@@ -85,16 +93,83 @@ def process_project_ttl(id):
     """
     Retrieves from KGG the respective ttl project file generated, saves it into the triple store and also generate respective thing description
     """
-    print(str(request.data))
-    return "Process project ttl with id: " + id
+    #print(str(request.data))
+    ttl = request.data.decode('utf-8')
+    #print(ttl)
+    ts_controller = TripleStore_Controller(ttl, id)
+    ts_controller.serialize_graph()
+    ts_controller.create_graph()
+    td_controller = TD_Generator_Controller(id, "project", hierarchy_level=0, graph_data=ttl)
+    td_controller.main()
+    #print(td_controller.td)
+    wot_controller = WoT_Hive_Controller()
+    wot_controller.post_td(id, td_controller.td)
+    return td_controller.td
 
 @app.route("/project/<id>/<file_type>/<file_id>/ttl", methods=['POST'])
 def process_file_ttl(id, file_type, file_id):
     """
     Retrieves from KGG the respective ttl file generated, saves it into the triple store and also generate respective thing descriptions for specific elements of the graph
     """
-    print(str(request.data))
-    return "TTL file retrieved with id: " + id + "\n file_type: " + file_type + "\n file_id: " + file_id
+    ttl = request.data.decode('utf-8')
+    file_url = ttl.split("\n")[-1]
+    ttl = ttl.replace(file_url, "")
+    file_url_td = {
+            'FileStorage' : {
+                'forms' : [
+                    {
+                        'href' : file_url,
+                        'type' : file_type
+                    }
+                ]
+            }
+        }
+    ts_controller = TripleStore_Controller(ttl, id, file_id)
+    ts_controller.serialize_graph()
+    ts_controller.create_graph()
+    link_def = {
+        "rel" : "",
+        "href" : "",
+        "type" : "application/td+json"
+    }
+    if file_type == "ifc":
+        # file thing description
+        td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=ttl, file_id=file_id)
+        td_controller.main()
+        #print(td_controller.td)
+        wot_controller = WoT_Hive_Controller()
+        wot_controller.post_td(id, td_controller.td)
+        # elements thing description
+        td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=2, graph_data=ttl, file_id=file_id)
+        td_controller.main()
+        # Update with file storage information
+        td_controller.td['properties'].update(file_url_td)
+        # Update parent Thing Description
+        link_def["rel"] = "facility:has" + file_type.capitalize()
+        link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
+        wot_controller.update_td(id, link_def)
+        #print(td_controller.thing_descriptions)
+        for td in td_controller.thing_descriptions:
+            td['properties'].update(file_url_td)
+            wot_controller.post_td(id, td)
+    else:
+        #ttl = request.data.decode('utf-8')
+        #print(ttl)
+        ts_controller = TripleStore_Controller(ttl, id)
+        ts_controller.serialize_graph()
+        ts_controller.create_graph()
+        td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
+        td_controller.main()
+        td_controller.td['properties'].update(file_url_td)
+        #print(td_controller.td)
+        wot_controller = WoT_Hive_Controller()
+        wot_controller.post_td(id, td_controller.td)
+        # Update parent Thing Description
+        link_def["rel"] = "facility:has" + file_type.capitalize()
+        link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
+        wot_controller.update_td(id, link_def)
+
+    return "TTL file retrieved with id: " + id + "\n file_type: " + file_type + "\n file_id: " + file_id + "\n thing description: \n" + str(td_controller.td)
 
 @app.route("/project/<id>/wrapper_error", methods=['POST'])
 def process_wrapper_error(id):
