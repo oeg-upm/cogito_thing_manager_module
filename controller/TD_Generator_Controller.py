@@ -89,6 +89,7 @@ class TD_Generator_Controller:
         self.pick_json_templates_by_type()
         self.load_controller(self.json_template_path)
         self.execute_sparql_query()
+        print("Without this does not work: ", str([row for row in self.service.query_results]))
         if self.hierarchy_level != 2:
             self.provide_values_to_render()
             self.generate_td()

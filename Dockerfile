@@ -10,6 +10,6 @@ RUN pip install -r requirements.txt
 
 COPY . /usr/src/app/
 
-CMD python3 -u thing_manager.py
+CMD ["python3", "-u" ,"thing_manager.py"]
 
 EXPOSE 8080

@@ -9,12 +9,15 @@ from controller.Error_Controller import Error_Controller
 from controller.WoT_Hive_Controller import WoT_Hive_Controller
 from controller.TD_Generator_Controller import TD_Generator_Controller
 from controller.TripleStore_Controller import TripleStore_Controller
+import os
 import sys
 sys.stdout.flush()
 
 
 app = Flask(__name__)
-app.config["REDIS_URL"] = "redis://localhost:6379"
+# app.config["REDIS_URL"] = "redis://localhost:6379"
+app.config['REDIS_URL'] = os.getenv('REDIS_URL')
+print("Redis Host: ", os.getenv('REDIS_URL'))
 app.register_blueprint(sse, url_prefix='/stream')
 
 @app.route("/project/<id>", methods=['GET'])
@@ -31,7 +34,7 @@ def create_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    tdd = WoT_Hive_Controller()
+    tdd = WoT_Hive_Controller(TMConfiguration.wot_directory)
     if not tdd.get_td(id):
         if controller.valid_id:
             controller.project_definition(action="create")
@@ -93,16 +96,13 @@ def process_project_ttl(id):
     """
     Retrieves from KGG the respective ttl project file generated, saves it into the triple store and also generate respective thing description
     """
-    #print(str(request.data))
     ttl = request.data.decode('utf-8')
-    #print(ttl)
-    ts_controller = TripleStore_Controller(ttl, id)
+    ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password)
     ts_controller.serialize_graph()
     ts_controller.create_graph()
     td_controller = TD_Generator_Controller(id, "project", hierarchy_level=0, graph_data=ttl)
     td_controller.main()
-    #print(td_controller.td)
-    wot_controller = WoT_Hive_Controller()
+    wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
     wot_controller.post_td(id, td_controller.td)
     return td_controller.td
 
@@ -124,9 +124,11 @@ def process_file_ttl(id, file_type, file_id):
                 ]
             }
         }
-    ts_controller = TripleStore_Controller(ttl, id, file_id)
+    # Triple Store save graph
+    ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
     ts_controller.serialize_graph()
     ts_controller.create_graph()
+
     link_def = {
         "rel" : "",
         "href" : "",
@@ -136,9 +138,8 @@ def process_file_ttl(id, file_type, file_id):
         # file thing description
         td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=ttl, file_id=file_id)
         td_controller.main()
-        #print(td_controller.td)
-        wot_controller = WoT_Hive_Controller()
-        wot_controller.post_td(id, td_controller.td)
+        wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+        wot_controller.post_td(td_controller.td["id"], td_controller.td)
         # elements thing description
         td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=2, graph_data=ttl, file_id=file_id)
         td_controller.main()
@@ -147,29 +148,40 @@ def process_file_ttl(id, file_type, file_id):
         # Update parent Thing Description
         link_def["rel"] = "facility:has" + file_type.capitalize()
         link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
-        wot_controller.update_td(id, link_def)
-        #print(td_controller.thing_descriptions)
+        parent_td = td_controller.td
+
+        r = wot_controller.get_td(id)
+        if r.status_code != 404:
+            wot_controller.update_td(id, link_def)
+        else:
+            wot_controller.predetermined_td_set(id)
+            wot_controller.post_td(id, wot_controller.predetermined_td)
+            wot_controller.update_td(id, link_def)
+
         for td in td_controller.thing_descriptions:
             td['properties'].update(file_url_td)
-            wot_controller.post_td(id, td)
+            wot_controller.post_td(td_controller.td["id"], td)
+        return parent_td
     else:
-        #ttl = request.data.decode('utf-8')
-        #print(ttl)
-        ts_controller = TripleStore_Controller(ttl, id)
-        ts_controller.serialize_graph()
-        ts_controller.create_graph()
         td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
         td_controller.main()
         td_controller.td['properties'].update(file_url_td)
-        #print(td_controller.td)
-        wot_controller = WoT_Hive_Controller()
-        wot_controller.post_td(id, td_controller.td)
+        wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+        wot_controller.post_td(td_controller.td["id"], td_controller.td)
         # Update parent Thing Description
         link_def["rel"] = "facility:has" + file_type.capitalize()
         link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
-        wot_controller.update_td(id, link_def)
+        parent_td = td_controller.td
 
-    return "TTL file retrieved with id: " + id + "\n file_type: " + file_type + "\n file_id: " + file_id + "\n thing description: \n" + str(td_controller.td)
+        r = wot_controller.get_td(id)
+        if r.status_code != 404:
+            wot_controller.update_td(id, link_def)
+        else:
+            wot_controller.predetermined_td_set(id)
+            wot_controller.post_td(id, wot_controller.predetermined_td)
+            wot_controller.update_td(id, link_def)
+
+        return parent_td
 
 @app.route("/project/<id>/wrapper_error", methods=['POST'])
 def process_wrapper_error(id):

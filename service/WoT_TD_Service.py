@@ -99,13 +99,11 @@ class TD_Service:
         Defines the properties to be used in the template
         """
         for property in self.json_template["thing_description"]["properties"]:
-            print("property", property)
             if " !! multiple !! " in property["href"]:
                 multiple_dict = self.exchange_values(property, multiple=True, external = False)
                 self.properties.append(multiple_dict)
             elif " !! external_id !! " in property["href"] or " !! external_file_id !! " in property["href"]:
                 external_value = self.exchange_values(property, multiple=False, external=True, identifier=self.project_identifier, file_identifier=self.file_identifier)
-                print("external_value", external_value)
                 self.properties.append(external_value)
             else:
                 new_value = self.exchange_values(property, multiple=False, external = False)
@@ -225,8 +223,6 @@ class TD_Service:
         else:
             if isinstance(for_value, dict):
                 for row in self.query_results:
-                    #sleep(1)
-                    #print("hello, query results",[row[0] for row in self.query_results]) # DO NOT REMOVE
                     new_value = for_value.copy()
                     for label in row.labels:
                         string_label = " ?? " + label + " ?? "

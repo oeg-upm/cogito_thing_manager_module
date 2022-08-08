@@ -23,8 +23,8 @@ class EventController:
                             "type": "schedule"
                         },
                         {
-                            "href": "file.res_type",
-                            "type": "resource_type"
+                            "href": "file.res_types",
+                            "type": "resource_types"
                         },
                         {
                             "href": "file.v_qc",
