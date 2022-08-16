@@ -162,6 +162,7 @@ class TD_Service:
         for metadata in self.json_template["thing_description"]:
             if metadata != "properties" and metadata != "actions" and metadata != "events" and metadata != "links":
                 if self.flag and metadata == "id":
+                    
                     if " ?? " in self.json_template["thing_description"][metadata]:
                         new_value = self.exchange_values(self.json_template["thing_description"][metadata], False)
                         self.metadata.update({"id" : new_value})

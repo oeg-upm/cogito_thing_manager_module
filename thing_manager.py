@@ -141,7 +141,7 @@ def process_file_ttl(id, file_type, file_id):
         wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
         wot_controller.post_td(td_controller.td["id"], td_controller.td)
         # elements thing description
-        td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=2, graph_data=ttl, file_id=file_id)
+        td_controller = TD_Generator_Controller(id, "ifc_elements", hierarchy_level=2, graph_data=ttl, file_id=file_id)
         td_controller.main()
         # Update with file storage information
         td_controller.td['properties'].update(file_url_td)
@@ -160,7 +160,7 @@ def process_file_ttl(id, file_type, file_id):
 
         for td in td_controller.thing_descriptions:
             td['properties'].update(file_url_td)
-            wot_controller.post_td(td_controller.td["id"], td)
+            wot_controller.post_td(td["id"], td)
         return parent_td
     else:
         td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
