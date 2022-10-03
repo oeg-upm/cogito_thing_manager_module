@@ -18,12 +18,12 @@
 
         "properties" : [
             {
-                "name": "KnowledgeGraph",
+                "name": "refersToKnowledgeGraph",
                 "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
                 "type": "text/turtle"
             },
             {
-                "name" : "ValueInGraph",
+                "name" : "hasValueInGraph",
                 "href" : " ?? s ?? ",
                 "type" : "text/turtle"
             }

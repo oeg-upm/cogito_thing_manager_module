@@ -14,13 +14,18 @@
 
         "properties" : [
             {
-                "name": "KnowledgeGraph",
+                "name": "hasKnowledgeGraph",
                 "href": "https://data.cogito.linkeddata.es/resources/ ?? id ?? ",
                 "type": "text/turtle"
             },
             {
-                "name": "ValueInGraph",
+                "name": "hasValueInGraph",
                 "href": " ?? s ?? ",
+                "type": "text/turtle"
+            },
+            {
+                "name": "hasValueInGraph_GoodPractice",
+                "href": "https://data.cogito.linkeddata.es/resources/project/ ?? id ?? ",
                 "type": "text/turtle"
             }
         ],

@@ -14,13 +14,18 @@
 
         "properties" : [
             {
-                "name": "KnowledgeGraph",
+                "name": "hasKnowledgeGraph",
                 "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
                 "type": "text/turtle"
             },
             {
-                "name" : "RelatedToProject",
+                "name" : "relatedToProject",
                 "href" : " ?? s ?? ",
+                "type" : "text/turtle"
+            },
+            {
+                "name" : "relatedToProject_GoodPractice",
+                "href" : "https://data.cogito.linkeddata.es/resources/project/ !! external_id !! ",
                 "type" : "text/turtle"
             }
         ],
@@ -31,7 +36,7 @@
 
         "links" : [
             {
-                "rel" : "facility:Project",
+                "rel" : "relatedToProject",
                 "href" : "https://data.cogito.linkeddata.es/api/things/ !! external_id !! ",
                 "type" : "application/td+json"
             }

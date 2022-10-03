@@ -67,7 +67,7 @@ class WoT_Hive_Controller():
             "description": "Project description",
             "links": [],
             "properties": {
-                "ValueInGraph": {
+                "hasValueInGraph": {
                     "forms": [
                         {
                             "href": "http://data.cogito.iot.linkeddata.es/resources/Project_"+id,
@@ -75,10 +75,18 @@ class WoT_Hive_Controller():
                         }
                     ]
                 },
-                "KnowledgeGraph": {
+                "hasKnowledgeGraph": {
                     "forms": [
                         {
                             "href": "https://data.cogito.linkeddata.es/resources/"+id,
+                            "type": "text/turtle"
+                        }
+                    ]
+                },
+                "hasValueInGraph_GoodPractice": {
+                    "forms": [
+                        {
+                            "href": "http://data.cogito.iot.linkeddata.es/resources/project/"+id,
                             "type": "text/turtle"
                         }
                     ]
