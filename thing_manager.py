@@ -23,7 +23,7 @@ app.register_blueprint(sse, url_prefix='/stream')
 @app.route("/project/<id>", methods=['GET'])
 def get_project(id):
     """
-    Retrieves the thing description of an existing project	
+    Retrieves the thing description of an existing project	-- This function can be done by asking the WoT-Hive
     """
     return "Get project with id: " + id
 
@@ -44,13 +44,14 @@ def create_project(id):
             error_controller.publish_error()
             return "Invalid id, the id must be a valid uuid"
     else:
-        return "Project already exists"
+        return "Project already exists!"
 
 
 @app.route("/project/<id>", methods=['PUT'])
 def update_project(id):
     """
     Updates an existing project, its respective triples and thing description
+    NO PROJECT WILL BE UPDATED
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
@@ -65,8 +66,18 @@ def update_project(id):
 def delete_project(id):
     """
     Deletes an existing project, its respective triples and thing description, and also the thing descriptions associated to it in cascade mode
+    NO PROJECTS WILL BE DELETED
     """
-    return "Delete project with id: " + id
+    ts_controller = TripleStore_Controller(None, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password)
+    ts_controller.delete_graph()
+    tdd = WoT_Hive_Controller(TMConfiguration.wot_directory)
+    td = tdd.get_td(id)
+    if td['types'] == "https://cogito.iot.linkeddata.es/def/facility#Project":
+        if td["links"] != []:
+            for link in td["links"]:
+                tdd.delete_td(link["href"].replace("http://data.cogito.iot.linkeddata.es/api/things/", ""))
+        tdd.delete_td(id)
+    return "Delete project with id: " + id + " and all its associated thing descriptions."
 
 @app.route("/project/<id>/file", methods=['POST'])
 def add_file_to_project(id):
@@ -75,19 +86,24 @@ def add_file_to_project(id):
     """
     event_controller = EventController(sse)
     controller = TM_Controller(id, request, event_controller)
-    if controller.valid_id:
-        controller.add_file(action="file_addition")
-        if controller.response is not None:
-            return controller.response
+    tdd = WoT_Hive_Controller(TMConfiguration.wot_directory)
+    if tdd.get_td(id):
+        if controller.valid_id:
+            controller.add_file(action="file_addition")
+            if controller.response is not None:
+                return controller.response
+            else:
+                return "Added file/s to project with id: " + id
         else:
-            return "Added file/s to project with id: " + id
+            return "Invalid id, the id must be a valid uuid"
     else:
-        return "Invalid id, the id must be a valid uuid"
+        return "Project does not exist!"
 
 @app.route("/project/<id>/file", methods=['DELETE'])
 def delete_file_from_project(id):
     """
     Deletes file from project and its respective triples and thing descriptions
+    NO FILES WILL BE DELETED FROM THE PROJECT THAT ARE RELATED TO THE PROJECT
     """
     return "Delete file from project with id: " + id
 
@@ -152,7 +168,7 @@ def process_file_ttl(id, file_type, file_id):
 
         r = wot_controller.get_td(id)
         if r.status_code != 404:
-            wot_controller.update_td(id, link_def)
+            return "Error Project ID not found"
         else:
             wot_controller.predetermined_td_set(id)
             wot_controller.post_td(id, wot_controller.predetermined_td)
@@ -193,15 +209,7 @@ def process_wrapper_error(id):
     return request.data
 
 
-#Example of a route for sse events publisher
-# @app.route('/send')
-# def send_message():
-#     """
-#     Send message to the client
-#     """
-#     controller = EventController(sse)
-#     controller.publish_message("project","created","{'hello':'world'}", "publish", "analytics")
-#     return "Message sent"
+
 
 
 if __name__ == '__main__':

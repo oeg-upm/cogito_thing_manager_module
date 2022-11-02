@@ -35,17 +35,15 @@ class TD_Generator_Controller:
         Picks the json template by type
         """
         if self.td_type == "project":
-            self.json_template_path = "json_templates/project.json"
+            self.json_template_path = "repository/json_templates/project.json"
         elif self.td_type == "ifc":
-            self.json_template_path = "json_templates/ifc.json"
+            self.json_template_path = "repository/json_templates/ifc.json"
         elif self.td_type == "ifc_elements":
-            self.json_template_path = "json_templates/ifc_elements.json"
+            self.json_template_path = "repository/json_templates/ifc_elements.json"
         elif self.td_type == "schedule":
-            self.json_template_path = "json_templates/schedule.json"
-            #self.json_template_path_child = "json_templates/schedule_elements.json"
+            self.json_template_path = "repository/json_templates/schedule.json"
         elif self.td_type == "resource_types":
-            self.json_template_path = "json_templates/resource_types.json"
-            #self.json_template_path_child = "json_templates/resource_types_elements.json"
+            self.json_template_path = "repository/json_templates/resource_types.json"
         else:
             pass
     
