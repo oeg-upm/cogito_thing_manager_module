@@ -1,0 +1,307 @@
+@prefix :      <https://cogito.iot.linkeddata.es/quality#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xml:   <http://www.w3.org/XML/1998/namespace> .
+@prefix afn:   <http://jena.apache.org/ARQ/function#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://astrea.linkeddata.es/shapes#050145a791bd80a620883c69432971a1>
+        a            sh:PropertyShape ;
+        rdfs:label   "refers to element" ;
+        sh:class     <https://cogito.iot.linkeddata.es/def/facility#Element> ;
+        sh:name      "refers to element" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :refersToElement .
+
+<https://astrea.linkeddata.es/shapes#f16ad02feead97280c5a09b30bcb7eca>
+        a            sh:PropertyShape ;
+        rdfs:label   "name" ;
+        sh:name      "name" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :name .
+
+<https://astrea.linkeddata.es/shapes#19edf27768ca02e778a027054aeaa187>
+        a               sh:NodeShape ;
+        rdfs:label      "Project" ;
+        sh:name         "Project" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/def/facility#Project> .
+
+<https://astrea.linkeddata.es/shapes#259c2143835789486a9eea8cca506028>
+        a            sh:PropertyShape ;
+        rdfs:label   "identifier" ;
+        sh:name      "identifier" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :identifier .
+
+<https://astrea.linkeddata.es/shapes#bcbba4a996a2380291cd84d31b874a61>
+        a            sh:PropertyShape ;
+        rdfs:label   "device position" ;
+        sh:name      "device position" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :devicePosition .
+
+<https://astrea.linkeddata.es/shapes#fdc15ade43fc71215a0eff8dfc90bd6e>
+        a            sh:PropertyShape ;
+        rdfs:label   "element type keyword" ;
+        sh:name      "element type keyword" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :elementTypeKeyword .
+
+<https://astrea.linkeddata.es/shapes#2ba5be9647abee57934d19a08d2602d0>
+        a            sh:PropertyShape ;
+        rdfs:label   "is related to project" ;
+        sh:class     <https://cogito.iot.linkeddata.es/def/facility#Project> ;
+        sh:name      "is related to project" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/facility#isRelatedToProject> .
+
+<https://astrea.linkeddata.es/shapes#b3b504a4193632f9ee4b04cde2d138d1>
+        a            sh:PropertyShape ;
+        rdfs:label   "result" ;
+        sh:name      "result" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :result .
+
+<https://astrea.linkeddata.es/shapes#2e10a6d95bf87a332afc653a460f8dc7>
+        a            sh:PropertyShape ;
+        rdfs:label   "origin document" ;
+        sh:name      "origin document" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :OriginDocument .
+
+<https://astrea.linkeddata.es/shapes#23e986a92f9bf7077c8ad7f783ff3ee5>
+        a            sh:PropertyShape ;
+        rdfs:label   "rule identifier" ;
+        sh:name      "rule identifier" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :ruleId .
+
+<https://astrea.linkeddata.es/shapes#eb71fef205e3ed9eea048b1961ff7231>
+        a            sh:PropertyShape ;
+        rdfs:label   "description" ;
+        sh:name      "description" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :description .
+
+<https://astrea.linkeddata.es/shapes#df3534c1d3d32b7b48eebd659b465ddf>
+        a            sh:PropertyShape ;
+        rdfs:label   "confidence level" ;
+        sh:name      "confidence level" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :confidenceLevel .
+
+<https://astrea.linkeddata.es/shapes#5e7872fe28ce675738cee1957951b0c0>
+        a            sh:PropertyShape ;
+        rdfs:label   "structure type" ;
+        sh:name      "structure type" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :structureType .
+
+<https://astrea.linkeddata.es/shapes#2347789a0a227ab598ec5ded8703f745>
+        a               sh:NodeShape ;
+        rdfs:label      "Geometric quality information" ;
+        sh:name         "Geometric quality information" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :GeometricQualityInformation .
+
+<https://astrea.linkeddata.es/shapes#bb4eda3ed60d29da6cb1c0d6d0c9110d>
+        a            sh:PropertyShape ;
+        rdfs:label   "label" ;
+        sh:name      "label" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :label .
+
+<https://astrea.linkeddata.es/shapes#c2b3cdd8022858071e845a64219f6e27>
+        a               sh:NodeShape ;
+        rdfs:label      "Image job" ;
+        sh:name         "Image job" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :ImageJob .
+
+<https://astrea.linkeddata.es/shapes#d2a3874972735954683a0650493a3eef>
+        a            sh:PropertyShape ;
+        rdfs:label   "relationship type keyword" ;
+        sh:name      "relationship type keyword" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :relationshipTypeKeyword .
+
+<https://astrea.linkeddata.es/shapes#0c88f701f1940d718cca7c32c3d1f46c>
+        a            sh:PropertyShape ;
+        rdfs:label   "performed timestamp" ;
+        sh:name      "performed timestamp" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :performedTimestamp .
+
+<https://astrea.linkeddata.es/shapes#d0c4ced02cf8a24e05a30a3bfc0468d2>
+        a            sh:PropertyShape ;
+        rdfs:label   "severity" ;
+        sh:name      "severity" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :severity .
+
+<https://astrea.linkeddata.es/shapes#3df535c351f166eae36d7326af55e0ed>
+        a            sh:PropertyShape ;
+        sh:datatype  xsd:boolean ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :processed ;
+        sh:pattern   "true|false|0|1" .
+
+<https://astrea.linkeddata.es/shapes#219f305d448cac604a8de1a1320b784f>
+        a            sh:PropertyShape ;
+        rdfs:label   "scheduled timestamp" ;
+        sh:name      "scheduled timestamp" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :scheduledTimestamp .
+
+<https://astrea.linkeddata.es/shapes#7dfccb3c4725d098deb2cf1b1b7ce371>
+        a            sh:PropertyShape ;
+        rdfs:label   "is related to work order" ;
+        sh:class     <https://cogito.iot.linkeddata.es/process#WorkOrder> ;
+        sh:name      "is related to work order" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :isRelatedToWorkOrder .
+
+<https://astrea.linkeddata.es/shapes#c5a4ce5bcf93757808f380b1d6ad4277>
+        a               sh:NodeShape ;
+        rdfs:label      "Rule" ;
+        sh:name         "Rule" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :Rule .
+
+<https://astrea.linkeddata.es/shapes#e025b64b334d79a8f29d9f427e18f2a0>
+        a            sh:PropertyShape ;
+        rdfs:label   "taken at time" ;
+        sh:name      "taken at time" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :takenAtTime .
+
+<https://astrea.linkeddata.es/shapes#5dbf9b77bfd2190038c5625aaaacf47c>
+        a            sh:PropertyShape ;
+        rdfs:label   "device orientation" ;
+        sh:name      "device orientation" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :deviceOrientation .
+
+<https://astrea.linkeddata.es/shapes#99446dbcfcb5704d0eed9976ab1f0bd7>
+        a            sh:PropertyShape ;
+        rdfs:label   "reflects defect" ;
+        sh:class     :Defect ;
+        sh:name      "reflects defect" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :reflectsDefect .
+
+<https://astrea.linkeddata.es/shapes#ab495ba755a75f9bd64ee2fb7b230bf4>
+        a               sh:NodeShape ;
+        rdfs:label      "Image" ;
+        sh:name         "Image" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :Image .
+
+<https://astrea.linkeddata.es/shapes#c32ca14d3e344cde76ae464713549b66>
+        a               sh:NodeShape ;
+        rdfs:label      "Defect" ;
+        sh:name         "Defect" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :Defect .
+
+<https://astrea.linkeddata.es/shapes#af4e534bc3b5b6e4a4016771a7068965>
+        a            sh:PropertyShape ;
+        rdfs:label   "refers to rule" ;
+        sh:class     :Rule ;
+        sh:name      "refers to rule" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :refersToRule .
+
+<http://astrea.linkeddata.es/report>
+        a       <https://w3id.org/def/astrea#ShapeReport> ;
+        <https://w3id.org/def/astrea#contains>
+                <https://astrea.linkeddata.es/shapes#1275031e9a6a6b90566a116870107d96> , <https://astrea.linkeddata.es/shapes#ab495ba755a75f9bd64ee2fb7b230bf4> , <https://astrea.linkeddata.es/shapes#19edf27768ca02e778a027054aeaa187> , <https://astrea.linkeddata.es/shapes#630da13c4f82c8d05f0fc84652c969f4> , <https://astrea.linkeddata.es/shapes#df3534c1d3d32b7b48eebd659b465ddf> , <https://astrea.linkeddata.es/shapes#6e64945ca900acb9db18fa42c053915f> , <https://astrea.linkeddata.es/shapes#bb4eda3ed60d29da6cb1c0d6d0c9110d> , <https://astrea.linkeddata.es/shapes#b3b504a4193632f9ee4b04cde2d138d1> , <https://astrea.linkeddata.es/shapes#0c88f701f1940d718cca7c32c3d1f46c> , <https://astrea.linkeddata.es/shapes#c2b3cdd8022858071e845a64219f6e27> , <https://astrea.linkeddata.es/shapes#c5a4ce5bcf93757808f380b1d6ad4277> , <https://astrea.linkeddata.es/shapes#e11e2760964de3984a7b97f876dd7362> , <https://astrea.linkeddata.es/shapes#f16ad02feead97280c5a09b30bcb7eca> , <https://astrea.linkeddata.es/shapes#7ff4c494e51f962b62eeec1d74c1b3b2> , <https://astrea.linkeddata.es/shapes#5dbf9b77bfd2190038c5625aaaacf47c> , <https://astrea.linkeddata.es/shapes#2ba5be9647abee57934d19a08d2602d0> , <https://astrea.linkeddata.es/shapes#1ab3d98822bb6ea22862396886187345> , <https://astrea.linkeddata.es/shapes#bcbba4a996a2380291cd84d31b874a61> , <https://astrea.linkeddata.es/shapes#23e986a92f9bf7077c8ad7f783ff3ee5> , <https://astrea.linkeddata.es/shapes#259c2143835789486a9eea8cca506028> , <https://astrea.linkeddata.es/shapes#3ae7810b96d1343071618de4dcb32a69> , <https://astrea.linkeddata.es/shapes#d2a3874972735954683a0650493a3eef> , <https://astrea.linkeddata.es/shapes#219f305d448cac604a8de1a1320b784f> , <https://astrea.linkeddata.es/shapes#a64c42050c69176d7ff1b2b28ffb2957> , <https://astrea.linkeddata.es/shapes#fdc15ade43fc71215a0eff8dfc90bd6e> , <https://astrea.linkeddata.es/shapes#1556f970052fd7921f8ac68df1b6c93f> , <https://astrea.linkeddata.es/shapes#050145a791bd80a620883c69432971a1> , <https://astrea.linkeddata.es/shapes#5e7872fe28ce675738cee1957951b0c0> , <https://astrea.linkeddata.es/shapes#99446dbcfcb5704d0eed9976ab1f0bd7> , <https://astrea.linkeddata.es/shapes#7dfccb3c4725d098deb2cf1b1b7ce371> , <https://astrea.linkeddata.es/shapes#210d452cf7e541ba7bc4396a7425b1b2> , <https://astrea.linkeddata.es/shapes#3df535c351f166eae36d7326af55e0ed> , <https://astrea.linkeddata.es/shapes#e025b64b334d79a8f29d9f427e18f2a0> , <https://astrea.linkeddata.es/shapes#d0c4ced02cf8a24e05a30a3bfc0468d2> , <https://astrea.linkeddata.es/shapes#2e10a6d95bf87a332afc653a460f8dc7> , <https://astrea.linkeddata.es/shapes#c32ca14d3e344cde76ae464713549b66> , <https://astrea.linkeddata.es/shapes#2347789a0a227ab598ec5ded8703f745> , <https://astrea.linkeddata.es/shapes#eb71fef205e3ed9eea048b1961ff7231> , <https://astrea.linkeddata.es/shapes#af4e534bc3b5b6e4a4016771a7068965> ;
+        <https://w3id.org/def/astrea#generatedShapesFrom>
+                <https://astrea.linkeddata.es/report/2039080051> .
+
+<https://astrea.linkeddata.es/shapes#1ab3d98822bb6ea22862396886187345>
+        a               sh:NodeShape ;
+        rdfs:label      "Work order" ;
+        sh:name         "Work order" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/process#WorkOrder> .
+
+<https://astrea.linkeddata.es/shapes#7ff4c494e51f962b62eeec1d74c1b3b2>
+        a               sh:NodeShape ;
+        rdfs:label      "Point cloud" ;
+        sh:name         "Point cloud" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :PointCoud .
+
+<https://astrea.linkeddata.es/shapes#e11e2760964de3984a7b97f876dd7362>
+        a               sh:NodeShape ;
+        rdfs:label      "Element" ;
+        sh:name         "Element" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/def/facility#Element> .
+
+<https://astrea.linkeddata.es/shapes#1556f970052fd7921f8ac68df1b6c93f>
+        a            sh:PropertyShape ;
+        rdfs:label   "reflects geometric quality" ;
+        sh:class     :GeometricQualityInformation ;
+        sh:name      "reflects geometric quality" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :reflectsGeometricQuality .
+
+<https://astrea.linkeddata.es/report/2039080051>
+        a       <https://w3id.org/def/astrea#ReportEntry> ;
+        <https://w3id.org/def/astrea#message>
+                "Shapes generated with no errors" ;
+        <https://w3id.org/def/astrea#source>
+                "https://cogito.iot.linkeddata.es/def/quality/ontology.ttl" ;
+        <https://w3id.org/def/astrea#statusCode>
+                "200"^^xsd:int .
+
+<https://astrea.linkeddata.es/shapes#1275031e9a6a6b90566a116870107d96>
+        a            sh:PropertyShape ;
+        rdfs:label   "scalar result" ;
+        sh:name      "scalar result" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :scalarResult .
+
+<https://astrea.linkeddata.es/shapes#210d452cf7e541ba7bc4396a7425b1b2>
+        a            sh:PropertyShape ;
+        rdfs:label   "material type keyword" ;
+        sh:name      "material type keyword" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :materialTypeKeyword .
+
+<https://astrea.linkeddata.es/shapes#3ae7810b96d1343071618de4dcb32a69>
+        a            sh:PropertyShape ;
+        rdfs:label   "tolerance reference" ;
+        sh:name      "tolerance reference" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :toleranceReference .
+
+<https://astrea.linkeddata.es/shapes#630da13c4f82c8d05f0fc84652c969f4>
+        a            sh:PropertyShape ;
+        rdfs:label   "problem" ;
+        sh:datatype  xsd:string ;
+        sh:name      "problem" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :problem ;
+        sh:pattern   ".*" .
+
+<https://astrea.linkeddata.es/shapes#a64c42050c69176d7ff1b2b28ffb2957>
+        a            sh:PropertyShape ;
+        rdfs:label   "status" ;
+        sh:datatype  xsd:string ;
+        sh:name      "status" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :status ;
+        sh:pattern   ".*" .
+
+<https://astrea.linkeddata.es/shapes#6e64945ca900acb9db18fa42c053915f>
+        a            sh:PropertyShape ;
+        rdfs:label   "unit" ;
+        sh:name      "unit" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :unit .

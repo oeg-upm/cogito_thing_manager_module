@@ -1,0 +1,260 @@
+@prefix :      <https://cogito.iot.linkeddata.es/def/resource#> .
+@prefix sh:    <http://www.w3.org/ns/shacl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix xml:   <http://www.w3.org/XML/1998/namespace> .
+@prefix afn:   <http://jena.apache.org/ARQ/function#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+
+<https://astrea.linkeddata.es/shapes#09dd65c966032a23ac2ceca683ceb1a3>
+        a            sh:PropertyShape ;
+        rdfs:label   "generates data" ;
+        sh:name      "generates data" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :generatesData .
+
+<https://astrea.linkeddata.es/shapes#284111746395ee040dcc80fabf5eb3e8>
+        a               sh:NodeShape ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :TrackingTagGroup .
+
+<https://astrea.linkeddata.es/shapes#6ace7559c09873d57bb26d2909a563c6>
+        a               sh:NodeShape ;
+        rdfs:label      "Spatial Thing" ;
+        sh:name         "Spatial Thing" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
+
+<https://astrea.linkeddata.es/shapes#962fe383efd475d6a0c3355b52bc3673>
+        a               sh:NodeShape ;
+        rdfs:label      "human role" ;
+        sh:name         "human role" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :HumanRole .
+
+<https://astrea.linkeddata.es/shapes#df2b949122a5031a04230386a0813932>
+        a               sh:NodeShape ;
+        rdfs:label      "Human Tag" ;
+        sh:name         "Human Tag" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :HumanTag .
+
+<https://astrea.linkeddata.es/shapes#aaf9d54eda525c18e705e43a164a2334>
+        a            sh:PropertyShape ;
+        rdfs:label   "cost per hour" ;
+        sh:name      "cost per hour" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :costPerHour .
+
+<https://astrea.linkeddata.es/shapes#0c753edd121f525eea2642affb801a2a>
+        a               sh:NodeShape ;
+        rdfs:label      "Resource type assignment" ;
+        sh:name         "Resource type assignment" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :ResourceTypeAssignment .
+
+<https://astrea.linkeddata.es/shapes#c616096c7c939faeb933fa7f3c9b5cc3>
+        a               sh:NodeShape ;
+        rdfs:label      "tracking tag" ;
+        sh:name         "tracking tag" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :TrackingTag .
+
+<https://astrea.linkeddata.es/shapes#f0799d69fff9f86419a5b5361fb45e42>
+        a            sh:PropertyShape ;
+        rdfs:label   "maximum number of units" ;
+        sh:name      "maximum number of units" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :maxUnit .
+
+<https://astrea.linkeddata.es/shapes#ecc7bc46d7a6d724117558a1a69bc793>
+        a            sh:PropertyShape ;
+        rdfs:label   "has resource type assignment" ;
+        sh:class     :ResourceTypeAssignment ;
+        sh:name      "has resource type assignment" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/process#hasResourceTypeAssignment> .
+
+<https://astrea.linkeddata.es/shapes#b5ec7e006c2f7665fad7bdf3217755b7>
+        a               sh:NodeShape ;
+        rdfs:label      "equipment tag group" ;
+        sh:name         "equipment tag group" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :EquipmentTagGroup .
+
+<http://astrea.linkeddata.es/report>
+        a       <https://w3id.org/def/astrea#ShapeReport> ;
+        <https://w3id.org/def/astrea#contains>
+                <https://astrea.linkeddata.es/shapes#7a3c656bc2b82ec95a9d40da0be2bc03> , <https://astrea.linkeddata.es/shapes#6ace7559c09873d57bb26d2909a563c6> , <https://astrea.linkeddata.es/shapes#f0799d69fff9f86419a5b5361fb45e42> , <https://astrea.linkeddata.es/shapes#6fc1e5ca4b8fa037d8f1b11465913bb1> , <https://astrea.linkeddata.es/shapes#aaf9d54eda525c18e705e43a164a2334> , <https://astrea.linkeddata.es/shapes#048232ce891a949415f166d3e36aa426> , <https://astrea.linkeddata.es/shapes#b5ec7e006c2f7665fad7bdf3217755b7> , <https://astrea.linkeddata.es/shapes#f1cf9d0c457199e76883bccafa74e89a> , <https://astrea.linkeddata.es/shapes#ecc7bc46d7a6d724117558a1a69bc793> , <https://astrea.linkeddata.es/shapes#6dc70a6f42f1a37eba36c24f94668883> , <https://astrea.linkeddata.es/shapes#368f8b165056794dc86f4b3c92e65801> , <https://astrea.linkeddata.es/shapes#898c69f95b04d3caafe9b5a3b908b7b2> , <https://astrea.linkeddata.es/shapes#a8b72f7c26d9c03291c0e3bcb3e3a560> , <https://astrea.linkeddata.es/shapes#962fe383efd475d6a0c3355b52bc3673> , <https://astrea.linkeddata.es/shapes#c616096c7c939faeb933fa7f3c9b5cc3> , <https://astrea.linkeddata.es/shapes#9ad934e10ece102b0a05c8b31ca05541> , <https://astrea.linkeddata.es/shapes#3f18e793b39c90743a2c6e008a045f12> , <https://astrea.linkeddata.es/shapes#df2b949122a5031a04230386a0813932> , <https://astrea.linkeddata.es/shapes#0c753edd121f525eea2642affb801a2a> , <https://astrea.linkeddata.es/shapes#f5a10ceebe03a0f0b37556e8052c05f5> , <https://astrea.linkeddata.es/shapes#5b1a044c425cadfa59d16cdccfe82542> , <https://astrea.linkeddata.es/shapes#8fbe1e84f873b7240369f6f17a399d41> , <https://astrea.linkeddata.es/shapes#161d6c347c64bc8a6e77245aeeda4ba0> , <https://astrea.linkeddata.es/shapes#911e74eaa5485bb9e3f249a59cc91d56> , <https://astrea.linkeddata.es/shapes#284111746395ee040dcc80fabf5eb3e8> , <https://astrea.linkeddata.es/shapes#09dd65c966032a23ac2ceca683ceb1a3> , <https://astrea.linkeddata.es/shapes#fb5edd3b022882e7eb6a0ede4e2a909e> , <https://astrea.linkeddata.es/shapes#087b9f263a6f690ac596f7600489829e> , <https://astrea.linkeddata.es/shapes#65b6d6c4c7cfd1f833e05c8cec3ca3b0> , <https://astrea.linkeddata.es/shapes#47a57b979a7217d321004d0d0d9eeb25> , <https://astrea.linkeddata.es/shapes#221cf138f38d999fa9e78e1c0172d374> , <https://astrea.linkeddata.es/shapes#b46053099880c65381d4c5a1f62e4931> , <https://astrea.linkeddata.es/shapes#f45ea41c06e90d923ea5be0242384827> ;
+        <https://w3id.org/def/astrea#generatedShapesFrom>
+                <https://astrea.linkeddata.es/report/0382392435> .
+
+<https://astrea.linkeddata.es/report/0382392435>
+        a       <https://w3id.org/def/astrea#ReportEntry> ;
+        <https://w3id.org/def/astrea#message>
+                "Shapes generated with no errors" ;
+        <https://w3id.org/def/astrea#source>
+                "https://cogito.iot.linkeddata.es/def/resources/ontology.ttl" ;
+        <https://w3id.org/def/astrea#statusCode>
+                "200"^^xsd:int .
+
+<https://astrea.linkeddata.es/shapes#368f8b165056794dc86f4b3c92e65801>
+        a               sh:NodeShape ;
+        rdfs:label      "Task" ;
+        sh:name         "Task" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/def/process#Task> .
+
+<https://astrea.linkeddata.es/shapes#9ad934e10ece102b0a05c8b31ca05541>
+        a               sh:NodeShape ;
+        rdfs:label      "human worker" ;
+        sh:name         "human worker" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :HumanWorker .
+
+<https://astrea.linkeddata.es/shapes#f1cf9d0c457199e76883bccafa74e89a>
+        a               sh:NodeShape ;
+        rdfs:label      "human tag group" ;
+        sh:name         "human tag group" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :HumanTagGroup .
+
+<https://astrea.linkeddata.es/shapes#f5a10ceebe03a0f0b37556e8052c05f5>
+        a            sh:PropertyShape ;
+        rdfs:label   "resource type identifier" ;
+        sh:name      "resource type identifier" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :resourceTypeId .
+
+<https://astrea.linkeddata.es/shapes#911e74eaa5485bb9e3f249a59cc91d56>
+        a            sh:PropertyShape ;
+        rdfs:label   "status" ;
+        sh:name      "status" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :status .
+
+<https://astrea.linkeddata.es/shapes#6dc70a6f42f1a37eba36c24f94668883>
+        a               sh:NodeShape ;
+        rdfs:label      "Resource" ;
+        sh:name         "Resource" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :Resource .
+
+<https://astrea.linkeddata.es/shapes#087b9f263a6f690ac596f7600489829e>
+        a               sh:NodeShape ;
+        rdfs:label      "work order" ;
+        sh:name         "work order" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/def/process#WorkOrder> .
+
+<https://astrea.linkeddata.es/shapes#161d6c347c64bc8a6e77245aeeda4ba0>
+        a            sh:PropertyShape ;
+        rdfs:label   "has resource type" ;
+        sh:class     :ResourceType ;
+        sh:name      "has resource type" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :hasResourceType .
+
+<https://astrea.linkeddata.es/shapes#6fc1e5ca4b8fa037d8f1b11465913bb1>
+        a            sh:PropertyShape ;
+        rdfs:label   "has tracking tag" ;
+        sh:class     :TrackingTag ;
+        sh:name      "has tracking tag" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :hasTrackingTag .
+
+<https://astrea.linkeddata.es/shapes#47a57b979a7217d321004d0d0d9eeb25>
+        a            sh:PropertyShape ;
+        rdfs:label   "name" ;
+        sh:datatype  xsd:string ;
+        sh:name      "name" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/process#name> ;
+        sh:pattern   ".*" .
+
+<https://astrea.linkeddata.es/shapes#898c69f95b04d3caafe9b5a3b908b7b2>
+        a               sh:NodeShape ;
+        rdfs:label      "Equipment" ;
+        sh:name         "Equipment" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :Equipment .
+
+<https://astrea.linkeddata.es/shapes#fb5edd3b022882e7eb6a0ede4e2a909e>
+        a            sh:PropertyShape ;
+        rdfs:label   "has component task" ;
+        sh:class     <https://cogito.iot.linkeddata.es/def/process#Task> ;
+        sh:name      "has component task" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/process#hasComponentTask> .
+
+<https://astrea.linkeddata.es/shapes#b46053099880c65381d4c5a1f62e4931>
+        a               sh:NodeShape ;
+        rdfs:label      "process" ;
+        sh:name         "process" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  <https://cogito.iot.linkeddata.es/def/process#Process> .
+
+<https://astrea.linkeddata.es/shapes#a8b72f7c26d9c03291c0e3bcb3e3a560>
+        a            sh:PropertyShape ;
+        rdfs:label   "belongs to type" ;
+        sh:class     :ResourceType ;
+        sh:name      "belongs to type" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      :belongsToType .
+
+<https://astrea.linkeddata.es/shapes#048232ce891a949415f166d3e36aa426>
+        a            sh:PropertyShape ;
+        rdfs:label   "has main provider" ;
+        sh:class     :HumanWorker ;
+        sh:name      "has main provider" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/process#hasMainProvider> .
+
+<https://astrea.linkeddata.es/shapes#f45ea41c06e90d923ea5be0242384827>
+        a            sh:PropertyShape ;
+        rdfs:label   "resource identifier" ;
+        sh:name      "resource identifier" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :resourceId .
+
+<https://astrea.linkeddata.es/shapes#65b6d6c4c7cfd1f833e05c8cec3ca3b0>
+        a            sh:PropertyShape ;
+        rdfs:label   "has assigned resource" ;
+        sh:class     :Resource ;
+        sh:name      "has assigned resource" ;
+        sh:nodeKind  sh:BlankNodeOrIRI ;
+        sh:path      <https://cogito.iot.linkeddata.es/def/process#hasAssignedResource> .
+
+<https://astrea.linkeddata.es/shapes#7a3c656bc2b82ec95a9d40da0be2bc03>
+        a               sh:NodeShape ;
+        rdfs:label      "Equipment Tag" ;
+        sh:name         "Equipment Tag" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :EquipmentTag .
+
+<https://astrea.linkeddata.es/shapes#3f18e793b39c90743a2c6e008a045f12>
+        a            sh:PropertyShape ;
+        rdfs:label   "email" ;
+        sh:name      "email" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :email .
+
+<https://astrea.linkeddata.es/shapes#221cf138f38d999fa9e78e1c0172d374>
+        a            sh:PropertyShape ;
+        rdfs:label   "quantity needed" ;
+        sh:name      "quantity needed" ;
+        sh:nodeKind  sh:Literal ;
+        sh:path      :quantityNeeded .
+
+<https://astrea.linkeddata.es/shapes#5b1a044c425cadfa59d16cdccfe82542>
+        a               sh:NodeShape ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :EquipmentType .
+
+<https://astrea.linkeddata.es/shapes#8fbe1e84f873b7240369f6f17a399d41>
+        a               sh:NodeShape ;
+        rdfs:label      "resource type" ;
+        sh:name         "resource type" ;
+        sh:nodeKind     sh:IRI ;
+        sh:targetClass  :ResourceType .

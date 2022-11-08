@@ -8,3 +8,4 @@ class TMConfiguration:
         self.__class__.triple_store_password = None
         self.__class__.thing_manager_host = None
         self.__class__.thing_manager_port = None
+        self.__class__.coppola = None

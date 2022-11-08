@@ -55,6 +55,8 @@ class TripleStore_Controller:
         self.sparql_endpoint.setHTTPAuth("DIGEST")
         self.sparql_endpoint.setCredentials(self.user, self.password)
         if self.file_id != None:
+            self.sparql_endpoint.setQuery("DELETE { GRAPH <https://data.cogito.iot.linkeddata.es/" + self.project_id + "> { ?s ?p ?o. } } WHERE { GRAPH <https://data.cogito.iot.linkeddata.es/" + self.project_id + "/" + self.file_id + "> { ?s ?p ?o. } }")
+            self.sparql_endpoint.query()
             self.sparql_endpoint.setQuery("CLEAR GRAPH <https://data.cogito.iot.linkeddata.es/" + self.project_id + "/" + self.file_id + ">")
             self.sparql_endpoint.query()
         else:

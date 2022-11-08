@@ -9,6 +9,7 @@ from controller.Error_Controller import Error_Controller
 from controller.WoT_Hive_Controller import WoT_Hive_Controller
 from controller.TD_Generator_Controller import TD_Generator_Controller
 from controller.TripleStore_Controller import TripleStore_Controller
+from controller.Coppola_Controller import Coppola_Controller
 import os
 import sys
 sys.stdout.flush()
@@ -71,7 +72,7 @@ def delete_project(id):
     ts_controller = TripleStore_Controller(None, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password)
     ts_controller.delete_graph()
     tdd = WoT_Hive_Controller(TMConfiguration.wot_directory)
-    td = tdd.get_td(id)
+    td = tdd.get_td(id).json()
     if td['types'] == "https://cogito.iot.linkeddata.es/def/facility#Project":
         if td["links"] != []:
             for link in td["links"]:
@@ -99,13 +100,24 @@ def add_file_to_project(id):
     else:
         return "Project does not exist!"
 
-@app.route("/project/<id>/file", methods=['DELETE'])
-def delete_file_from_project(id):
+@app.route("/project/<id>/file/<file_id>", methods=['DELETE'])
+def delete_file_from_project(id, file_id):
     """
     Deletes file from project and its respective triples and thing descriptions
-    NO FILES WILL BE DELETED FROM THE PROJECT THAT ARE RELATED TO THE PROJECT
+    Update parent project thing description removing the td link from links
     """
-    return "Delete file from project with id: " + id
+    ts_controller = TripleStore_Controller(None, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
+    ts_controller.delete_graph()
+    tdd = WoT_Hive_Controller(TMConfiguration.wot_directory)
+    td = tdd.get_td(id).json()
+    if td['types'] == "https://cogito.iot.linkeddata.es/def/facility#Project":
+        if td["links"] != []:
+            for link in td["links"]:
+                if link["href"] ==  "http://data.cogito.iot.linkeddata.es/api/things/" + file_id:
+                    td["links"].remove(link)
+    tdd.post_td(id, td)
+    tdd.delete_td(file_id)
+    return "Delete file with id: " + file_id + " and related thing descriptions from project with id: " + id
 
 @app.route("/project/<id>/ttl", methods=['POST'])
 def process_project_ttl(id):
@@ -140,64 +152,82 @@ def process_file_ttl(id, file_type, file_id):
                 ]
             }
         }
-    # Triple Store save graph
-    ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
-    ts_controller.serialize_graph()
-    ts_controller.create_graph()
 
-    link_def = {
-        "rel" : "",
-        "href" : "",
-        "type" : "application/td+json"
-    }
-    if file_type == "ifc":
-        # file thing description
-        td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=ttl, file_id=file_id)
-        td_controller.main()
-        wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
-        wot_controller.post_td(td_controller.td["id"], td_controller.td)
-        # elements thing description
-        td_controller = TD_Generator_Controller(id, "ifc_elements", hierarchy_level=2, graph_data=ttl, file_id=file_id)
-        td_controller.main()
-        # Update with file storage information
-        td_controller.td['properties'].update(file_url_td)
-        # Update parent Thing Description
-        link_def["rel"] = "facility:has" + file_type.capitalize()
-        link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
-        parent_td = td_controller.td
-
-        r = wot_controller.get_td(id)
-        if r.status_code != 404:
-            return "Error Project ID not found"
-        else:
-            wot_controller.predetermined_td_set(id)
-            wot_controller.post_td(id, wot_controller.predetermined_td)
-            wot_controller.update_td(id, link_def)
-
-        for td in td_controller.thing_descriptions:
-            td['properties'].update(file_url_td)
-            wot_controller.post_td(td["id"], td)
-        return parent_td
+    if file_type == "iot" or file_type == "vqc" or file_type == "gqc":
+        # Triple Store validate graph
+        validation_controller = Coppola_Controller(ttl)
+        validation_controller.validate()
+        if validation_controller.validation_error == True:
+            return "Error validating"
+        # if some of the elements of the list of validation response contains a conforms == false, return error, ttl malformed.
+        # Triple Store save graph
+        #ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
+        #ts_controller.serialize_graph()
+        #ts_controller.create_graph()
+         
+        # TD Generator Controller
+        
+        pass
     else:
-        td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
-        td_controller.main()
-        td_controller.td['properties'].update(file_url_td)
-        wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
-        wot_controller.post_td(td_controller.td["id"], td_controller.td)
-        # Update parent Thing Description
-        link_def["rel"] = "facility:has" + file_type.capitalize()
-        link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
-        parent_td = td_controller.td
+        # Triple Store save graph
+        ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
+        ts_controller.serialize_graph()
+        ts_controller.create_graph()
 
-        r = wot_controller.get_td(id)
-        if r.status_code != 404:
-            wot_controller.update_td(id, link_def)
+        link_def = {
+            "rel" : "",
+            "href" : "",
+            "type" : "application/td+json"
+        }
+        if file_type == "ifc":
+            # file thing description
+            td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=ttl, file_id=file_id)
+            td_controller.main()
+            wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+            wot_controller.post_td(td_controller.td["id"], td_controller.td)
+            # elements thing description
+            td_controller = TD_Generator_Controller(id, "ifc_elements", hierarchy_level=2, graph_data=ttl, file_id=file_id)
+            td_controller.main()
+            # Update with file storage information
+            td_controller.td['properties'].update(file_url_td)
+            # Update parent Thing Description
+            link_def["rel"] = "facility:has" + file_type.capitalize()
+            link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
+            parent_td = td_controller.td
+
+            r = wot_controller.get_td(id)
+            if r.status_code != 404:
+                return "Error Project ID not found"
+            else:
+                wot_controller.predetermined_td_set(id)
+                wot_controller.post_td(id, wot_controller.predetermined_td)
+                wot_controller.update_td(id, link_def)
+
+            for td in td_controller.thing_descriptions:
+                td['properties'].update(file_url_td)
+                wot_controller.post_td(td["id"], td)
+            return parent_td
+        
         else:
-            wot_controller.predetermined_td_set(id)
-            wot_controller.post_td(id, wot_controller.predetermined_td)
-            wot_controller.update_td(id, link_def)
+            td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
+            td_controller.main()
+            td_controller.td['properties'].update(file_url_td)
+            wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+            wot_controller.post_td(td_controller.td["id"], td_controller.td)
+            # Update parent Thing Description
+            link_def["rel"] = "facility:has" + file_type.capitalize()
+            link_def["href"] = "http://data.cogito.iot.linkeddata.es/api/things/" + file_id
+            parent_td = td_controller.td
 
-        return parent_td
+            r = wot_controller.get_td(id)
+            if r.status_code != 404:
+                wot_controller.update_td(id, link_def)
+            else:
+                wot_controller.predetermined_td_set(id)
+                wot_controller.post_td(id, wot_controller.predetermined_td)
+                wot_controller.update_td(id, link_def)
+
+            return parent_td
 
 @app.route("/project/<id>/wrapper_error", methods=['POST'])
 def process_wrapper_error(id):
@@ -247,6 +277,13 @@ if __name__ == '__main__':
             if not config.has_option('thing_manager', 'port'):
                 print("Missing 'port' option in 'thing_manager' section in 'config.ini'.")
                 exit()
+        if not config.has_section('coppola'):
+                print("Missing 'coppola' mandatory section in 'config.ini'.")
+                exit()
+        else:
+            if not config.has_option('coppola', 'host'):
+                print("Missing 'host' option in 'coppola' section in 'config.ini'.")
+                exit()
         
         TMConfiguration.wot_directory = config.get('wot_directory', 'host')
         TMConfiguration.triple_store_host = config.get('triple_store', 'host')
@@ -254,6 +291,7 @@ if __name__ == '__main__':
         TMConfiguration.triple_store_password = config.get('triple_store', 'password')
         TMConfiguration.thing_manager_host = config.get('thing_manager', 'host')
         TMConfiguration.thing_manager_port = config.getint('thing_manager', 'port')
+        TMConfiguration.coppola = config.get('coppola', 'host')
     else:
         print('Error reading config file.')
 
