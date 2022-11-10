@@ -1,4 +1,5 @@
 from TMConfiguration import TMConfiguration
+from TM_Events_Listener import TM_Events_Listener
 from flask import Flask, json, send_file, request, make_response, jsonify, after_this_request, Response
 from configparser import ConfigParser
 from flask_sse import sse
@@ -229,8 +230,8 @@ def process_file_ttl(id, file_type, file_id):
 
             return parent_td
 
-@app.route("/project/<id>/wrapper_error", methods=['POST'])
-def process_wrapper_error(id):
+@app.route("/wrapper_error", methods=['POST'])
+def process_wrapper_error():
     """
     Handle wrapper error ocurred during the process of wrapper execution (json format)
     """
