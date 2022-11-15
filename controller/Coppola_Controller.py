@@ -2,8 +2,8 @@ import requests
 from TMConfiguration import TMConfiguration
 
 class Coppola_Controller:
-    def __init__(self, ttl):
-        self.coppola_endpoint = None
+    def __init__(self, ttl, coppola_endpoint):
+        self.coppola_endpoint = coppola_endpoint
         self.ttl = ttl
         self.url_list = None
         self.response_list = None
@@ -17,7 +17,6 @@ class Coppola_Controller:
     
     def set_coppola_config(self):
         tm_config = TMConfiguration()
-        self.coppola_endpoint = tm_config.coppola_endpoint
         self.url_list = [self.coppola_endpoint + '/api/process?format=turtle',
                          self.coppola_endpoint + '/api/facility?format=turtle',
                          self.coppola_endpoint + '/api/resource?format=turtle',

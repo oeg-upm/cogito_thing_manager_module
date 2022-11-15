@@ -2,24 +2,38 @@
 
 class Errors:
     def __init__(self):
-        self.__error_number = None
-        self.__error_description = None
+        self.event_json = None
 
 
-    def get_error_number(self):
-        return self.__error_number
+    def get_json(self):
+        return self.event_json
 
-    def get_error_description(self):
-        return self.__error_description
-    
-    def set_error_number(self, error_number):
-        self.__error_number = error_number
-
-    def set_error_description(self, error_description):
-        self.__error_description = error_description
-        
-    def to_json(self):
-        return {
-            "error_number": self.get_error_number(),
-            "error_description": self.get_error_description()
+    def init_json(self):
+        # self.event_json = {
+        #     "in_process": [],
+        #     "completed": [],
+        #     "error": []
+        # }
+        self.event_json = {
+            "in_process": [{
+                    "project_id": "123",
+                    "file_id": "456",
+                    "file_type": "schedule",
+                    "in_progress": True,
+                    "timestamp": "01-01-2020, 00:00:00",
+                    "error_message": None
+                },
+                {
+                    "project_id": "2",
+                    "file_id": None,
+                },
+                {
+                    "project_id": "3",
+                    "file_id": None,
+                }],
+            "completed": [],
+            "error": []
         }
+
+    def update_json(self, event_json):
+        self.event_json = event_json
