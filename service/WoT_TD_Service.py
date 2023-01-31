@@ -47,6 +47,7 @@ class TD_Service:
         template_rendered = self.template.render(self.td_model.get_info_to_render()) # rendered in str format
         template_rendered = re.sub(r"[\n\t]*", "", template_rendered).replace(",}", "}").replace(",]", "]") # preprocess string before rendering to json format
         self.thing_description = ast.literal_eval(template_rendered)
+        #print(self.thing_description)
 
     def set_variables_to_render(self):
         """
@@ -98,6 +99,7 @@ class TD_Service:
         """
         Defines the properties to be used in the template
         """
+        self.properties = []
         for property in self.json_template["thing_description"]["properties"]:
             if " !! multiple !! " in property["href"]:
                 multiple_dict = self.exchange_values(property, multiple=True, external = False)
@@ -113,6 +115,7 @@ class TD_Service:
         """
         Defines the actions to be used in the template
         """
+        self.actions = []
         for action in self.json_template["thing_description"]["actions"]:
             if " !! multiple !! " in action["href"]:
                 multiple_dict = self.exchange_values(action, True)
@@ -128,6 +131,7 @@ class TD_Service:
         """
         Defines the events to be used in the template
         """
+        self.events = []
         for event in self.json_template["thing_description"]["events"]:
             if " !! multiple !! " in event["href"]:
                 multiple_dict = self.exchange_values(event, True)
@@ -143,6 +147,7 @@ class TD_Service:
         """
         Defines the links to be used in the template
         """
+        self.links = []
         for link in self.json_template["thing_description"]["links"]:
             if " !! multiple !! " in link["href"]:
                 multiple_dict = self.exchange_values(link, True)
@@ -184,6 +189,9 @@ class TD_Service:
                     if " ?? " in self.json_template["thing_description"][metadata]:
                         new_value = self.exchange_values(self.json_template["thing_description"][metadata], False)
                         self.metadata.update({"description" : new_value})
+                    elif " !! external_id !! " in self.json_template["thing_description"][metadata]:
+                        external_value = self.exchange_values(self.json_template["thing_description"][metadata], multiple=None, external=True, identifier=self.project_identifier, file_identifier=None)
+                        self.metadata.update({"description" : external_value})
                     else:
                         new_value = self.json_template["thing_description"][metadata]
                         self.metadata.update({"description" : new_value})
@@ -211,6 +219,7 @@ class TD_Service:
                         new_value["href"] = new_value["href"].replace(string_label, row[label])
                         multiple_dict["multiple_"+for_value[key]].append(new_value)
             return multiple_dict
+
         elif external and identifier != "None" and file_identifier != "None":
             if isinstance(for_value, dict):
                 new_value = for_value.copy()
@@ -220,6 +229,14 @@ class TD_Service:
                     new_value["href"] = new_value["href"].replace(string_label_id, identifier)
                 if string_label_file_id in for_value["href"]:
                     new_value["href"] = new_value["href"].replace(string_label_file_id, file_identifier)
+                return new_value
+            elif isinstance(for_value, str):
+                string_label_id = " !! external_id !! "
+                string_label_file_id = " !! external_file_id !! "
+                if string_label_id in for_value:
+                    new_value = for_value.replace(string_label_id, identifier)
+                if string_label_file_id in for_value:
+                    new_value = new_value.replace(string_label_file_id, file_identifier)
                 return new_value
         else:
             if isinstance(for_value, dict):

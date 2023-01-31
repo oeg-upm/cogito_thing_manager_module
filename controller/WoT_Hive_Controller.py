@@ -31,7 +31,7 @@ class WoT_Hive_Controller():
 
     def update_td(self, id, data): # update project thing descriptions
         response = self.get_td(id)
-        td = json.loads(response.text)
+        td = response.json()
         if "links" in td:
             td["links"].append(data)
         else:

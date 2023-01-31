@@ -6,6 +6,10 @@
             {
                 "name" : "facility",
                 "href" : "https://cogito.iot.linkeddata.es/def/facility#"
+            },
+            {
+                "name" : "platform",
+                "href" : "https://cogito.iot.linkeddata.es/def/platform#"
             }
         ],
         "type" : " ?? type ?? ",
@@ -14,18 +18,18 @@
 
         "properties" : [
             {
-                "name": "hasKnowledgeGraph",
-                "href": "https://data.cogito.linkeddata.es/resources/ ?? id ?? ",
+                "name": "platform:hasKnowledgeGraph",
+                "href": "https://data.cogito.iot.linkeddata.es/resources/ ?? id ?? ",
                 "type": "text/turtle"
             },
             {
-                "name": "hasValueInGraph",
+                "name": "platform:hasValueInGraph",
                 "href": " ?? s ?? ",
                 "type": "text/turtle"
             },
             {
-                "name": "hasValueInGraph_GoodPractice",
-                "href": "https://data.cogito.linkeddata.es/resources/project/ ?? id ?? ",
+                "name": "platform:hasIRI",
+                "href": "https://data.cogito.iot.linkeddata.es/resources/project/ ?? id ?? ",
                 "type": "text/turtle"
             }
         ],

@@ -11,8 +11,6 @@ from controller.WoT_Hive_Controller import WoT_Hive_Controller
 from controller.TD_Generator_Controller import TD_Generator_Controller
 from controller.TripleStore_Controller import TripleStore_Controller
 from controller.Coppola_Controller import Coppola_Controller
-from controller.Helio_Mapping_Controller import Helio_Mapping_Controller
-from service.Graph_Service import Graph_Service
 import os
 import sys
 import hashlib
@@ -86,11 +84,6 @@ def delete_project(id):
                 if "links" in td:
                     if td["links"] != []:
                         for link in td["links"]:
-                            if link["rel"] =="platform:hasIfc":
-                                ifc_id = link["href"].replace("http://data.cogito.iot.linkeddata.es/api/things/", "")
-                                ifc_td = tdd.get_td(ifc_id).json()
-                                for elem in ifc_td["links"]:
-                                    tdd.delete_td(elem["href"].replace("http://data.cogito.iot.linkeddata.es/api/things/", ""))
                             tdd.delete_td(link["href"].replace("http://data.cogito.iot.linkeddata.es/api/things/", ""))
                 tdd.delete_td(id)
             return "Delete project with id: " + id + " and all its associated thing descriptions."
@@ -143,11 +136,6 @@ def delete_file_from_project(id, file_id):
                         if link["href"] ==  "https://data.cogito.iot.linkeddata.es/tdd/api/things/" + file_id:
                             td["links"].remove(link)
             tdd.post_td(id, td)
-            file_td = tdd.get_td(file_id)
-            if file_td["title"] == "IFC File":
-                if file_td["links"] != []:
-                    for link in file_td["links"]:
-                        tdd.delete_td(link["href"].replace("http://data.cogito.iot.linkeddata.es/api/things/", ""))
             tdd.delete_td(file_id)
             return "Delete file with id: " + file_id + " and related thing descriptions from project with id: " + id
         except:
@@ -183,105 +171,6 @@ def process_project_ttl(id):
     else:
         return "Method not allowed", 405
 
-@app.route("/project/<id>/file/ttl", methods=['POST'])
-def process_external_file_ttl(id):
-    """
-    Retrieves from DTP the respective ttl file generated, saves it inside the triple store if the validation process conforms to the ontologies and generate its respective thing descriptions.
-    """
-    if request.method == 'POST':
-        rdf = request.data.decode('utf-8')
-        # read ttl file and query with sparql for the respective type of file the information comes from
-        # call graph service
-        graph_service = Graph_Service(rdf)
-        graph_service.parse_graph()
-        graph_service.get_files()
-        if graph_service.file_id != None:
-            graph_service.update_graph(graph_service.query_remove_files)
-        else:
-            graph_service.define_random_uuid()
-        controller = Helio_Mapping_Controller(id, graph_service.file_id, graph_service.graph.serialize(format="turtle"), TMConfiguration.helio_host)
-        controller.generate_single_mapping("mapping.template.edge")
-        controller.post_mapping("single_mapping")
-        controller.get_mapping_data("single_mapping")
-        
-        if controller.data != "Triples Stored Properly":
-            return controller.data
-
-        file_id = graph_service.file_id
-        file_url = graph_service.file_url
-        file_type = graph_service.file_url.split(".")[-1]
-
-        if id[0].isdigit():
-            controller.modify_project_id("F" + id)
-        controller.generate_consistency_mapping("consistency_mapping_template.edge")
-        controller.post_mapping("consistency_mapping")
-        controller.get_mapping_data("consistency_mapping")
-
-        file_url_td = {
-                'platform:hasFile' : {
-                    'forms' : [
-                        {
-                            'href' : file_url,
-                            'type' : file_type,
-                        }
-                    ]
-                }
-            }
-
-        link_def = {
-            "rel" : "",
-            "href" : "",
-            "type" : "application/td+json"
-        }
-
-        if graph_service.file_url.endswith(".ifc"):
-            # file thing description
-            try:
-                td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=rdf, file_id=file_id)
-                td_controller.main()
-            except:
-                error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of ifc file.", wrapper = False)
-                return "Error generating Thing Description of ifc file."
-            try:
-                wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
-                wot_controller.post_td(td_controller.td["id"], td_controller.td)
-            except:
-                error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Description in WoT Hive ifc file information.", wrapper = False)
-                return "Error saving Thing Description in WoT Hive ifc file information."
-            # elements thing description
-            try:
-                td_controller = TD_Generator_Controller(id, "ifc_elements", hierarchy_level=2, graph_data=rdf, file_id=file_id)
-                td_controller.main()
-                # Update with file storage information
-                td_controller.td['properties'].update(file_url_td)
-                # Update parent Thing Description
-                link_def["rel"] = "platform:has" + file_type.capitalize()
-                link_def["href"] = "https://data.cogito.iot.linkeddata.es/tdd/api/things/" + file_id
-                try:
-                    wot_controller.update_td(id, link_def)
-                except:
-                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error updating Thing Description in WoT Hive project information.", wrapper = False)
-                    return "Error updating Thing Description in WoT Hive project information."
-
-                try:
-                    for td in td_controller.thing_descriptions:
-                        td['properties'].update(file_url_td)
-                        wot_controller.post_td(td["id"], td)
-                    error_service.create_entry(event = "completed", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = None, wrapper = False)
-                    return td_controller.td
-                except:
-                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Descriptions of elements information in WoT Hive.", wrapper = False)
-                    return "Error saving Thing Descriptions of elements information in WoT Hive."
-            except:
-                error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of ifc elements.", wrapper = False)
-                return "Error generating Thing Description of ifc elements."
-
-        return "All the process has been completed. Project_ID = " + id + " File_ID = " + file_id
-    else:
-        return "Method not allowed", 405
-
-
-
 @app.route("/project/<id>/<file_type>/<file_id>/ttl", methods=['POST'])
 def process_file_ttl(id, file_type, file_id):
     """
@@ -301,44 +190,104 @@ def process_file_ttl(id, file_type, file_id):
                     ]
                 }
             }
-        try:
-            ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
-            ts_controller.serialize_graph()
-            ts_controller.create_graph()
-        except:
-            error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Knowledge Graph in Triplestore", wrapper = False)
-            return "Error saving Knowledge Graph in Triplestore"
 
-        link_def = {
-            "rel" : "",
-            "href" : "",
-            "type" : "application/td+json"
-        }
-        
-        try:
-            td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
-            td_controller.main()
-            td_controller.td['properties'].update(file_url_td)
-        except:
-            error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of " + file_type + " file.", wrapper = False)
-            return "Error generating Thing Description of " + file_type + " file."
-        try:
-            wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
-            wot_controller.post_td(td_controller.td["id"], td_controller.td)
-            # Update parent Thing Description
-            link_def["rel"] = "platform:has" + file_type.capitalize()
-            link_def["href"] = "https://data.cogito.iot.linkeddata.es/tdd/api/things/" + file_id
-            try:
-                wot_controller.update_td(id, link_def)
-            except:
-                error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error updating Thing Description in WoT Hive project information.", wrapper = False)
-                return "Error updating Thing Description in WoT Hive project information."                    
-            error_service.create_entry(event = "completed", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = None, wrapper = False)
+        if file_type == "iot" or file_type == "vqc" or file_type == "gqc":
+            # Triple Store validate graph
+            validation_controller = Coppola_Controller(ttl)
+            validation_controller.validate()
+            if validation_controller.validation_error == True:
+                return "Error validating"
+            # if some of the elements of the list of validation response contains a conforms == false, return error, ttl malformed.
+            # Triple Store save graph
+            #ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
+            #ts_controller.serialize_graph()
+            #ts_controller.create_graph()
             
-            return td_controller.td
-        except:
-            error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Description " + file_type + " file information in WoT Hive.", wrapper = False)
-            return "Error saving Thing Description " + file_type + " file information in WoT Hive."
+            # TD Generator Controller
+            
+            pass
+        else:
+            # Triple Store save graph
+            try:
+                ts_controller = TripleStore_Controller(ttl, id, TMConfiguration.triple_store_host, TMConfiguration.triple_store_user, TMConfiguration.triple_store_password, file_id=file_id)
+                ts_controller.serialize_graph()
+                ts_controller.create_graph()
+            except:
+                error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Knowledge Graph in Triplestore", wrapper = False)
+                #return "Error saving Knowledge Graph in Triplestore"
+
+            link_def = {
+                "rel" : "",
+                "href" : "",
+                "type" : "application/td+json"
+            }
+            if file_type == "ifc":
+                # file thing description
+                try:
+                    td_controller = TD_Generator_Controller(id, "ifc", hierarchy_level=1, graph_data=ttl, file_id=file_id)
+                    td_controller.main()
+                except:
+                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of ifc file.", wrapper = False)
+                    return "Error generating Thing Description of ifc file."
+                try:
+                    wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+                    wot_controller.post_td(td_controller.td["id"], td_controller.td)
+                except:
+                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Description in WoT Hive ifc file information.", wrapper = False)
+                    return "Error saving Thing Description in WoT Hive ifc file information."
+                # elements thing description
+                try:
+                    td_controller = TD_Generator_Controller(id, "ifc_elements", hierarchy_level=2, graph_data=ttl, file_id=file_id)
+                    td_controller.main()
+                    # Update with file storage information
+                    td_controller.td['properties'].update(file_url_td)
+                    # Update parent Thing Description
+                    link_def["rel"] = "platform:has" + file_type.capitalize()
+                    link_def["href"] = "https://data.cogito.iot.linkeddata.es/tdd/api/things/" + file_id
+                    try:
+                        wot_controller.update_td(id, link_def)
+                    except:
+                        error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error updating Thing Description in WoT Hive project information.", wrapper = False)
+                        return "Error updating Thing Description in WoT Hive project information."
+
+                    try:
+                        for td in td_controller.thing_descriptions:
+                            td['properties'].update(file_url_td)
+                            wot_controller.post_td(td["id"], td)
+                        error_service.create_entry(event = "completed", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = None, wrapper = False)
+                        return td_controller.td
+                    except:
+                        error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Descriptions of elements information in WoT Hive.", wrapper = False)
+                        return "Error saving Thing Descriptions of elements information in WoT Hive."
+                except:
+                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of ifc elements.", wrapper = False)
+                    return "Error generating Thing Description of ifc elements."
+            
+            else:
+                try:
+                    td_controller = TD_Generator_Controller(id, file_type, hierarchy_level=1, graph_data=ttl, file_id=file_id)
+                    td_controller.main()
+                    td_controller.td['properties'].update(file_url_td)
+                except:
+                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error generating Thing Description of " + file_type + " file.", wrapper = False)
+                    return "Error generating Thing Description of " + file_type + " file."
+                try:
+                    wot_controller = WoT_Hive_Controller(TMConfiguration.wot_directory)
+                    wot_controller.post_td(td_controller.td["id"], td_controller.td)
+                    # Update parent Thing Description
+                    link_def["rel"] = "platform:has" + file_type.capitalize()
+                    link_def["href"] = "https://data.cogito.iot.linkeddata.es/tdd/api/things/" + file_id
+                    try:
+                        wot_controller.update_td(id, link_def)
+                    except:
+                        error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error updating Thing Description in WoT Hive project information.", wrapper = False)
+                        return "Error updating Thing Description in WoT Hive project information."                    
+                    error_service.create_entry(event = "completed", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = None, wrapper = False)
+                    
+                    return td_controller.td
+                except:
+                    error_service.create_entry(event = "error", project_id = id, in_progress = False, file_id = file_id, file_type = file_type, error_message = "Error saving Thing Description " + file_type + " file information in WoT Hive.", wrapper = False)
+                    return "Error saving Thing Description " + file_type + " file information in WoT Hive."
     else:
         return "Method not allowed", 405
 
@@ -400,14 +349,6 @@ if __name__ == '__main__':
                 print("Missing 'host' option in 'coppola' section in 'config.ini'.")
                 exit()
         
-        if not config.has_section('helio'):
-                print("Missing 'helio' mandatory section in 'config.ini'.")
-                exit()
-        else:
-            if not config.has_option('helio', 'host'):
-                print("Missing 'host' option in 'helio' section in 'config.ini'.")
-                exit()
-        
         TMConfiguration.wot_directory = config.get('wot_directory', 'host')
         TMConfiguration.triple_store_host = config.get('triple_store', 'host')
         TMConfiguration.triple_store_user = config.get('triple_store', 'user')
@@ -415,7 +356,6 @@ if __name__ == '__main__':
         TMConfiguration.thing_manager_host = config.get('thing_manager', 'host')
         TMConfiguration.thing_manager_port = config.getint('thing_manager', 'port')
         TMConfiguration.coppola = config.get('coppola', 'host')
-        TMConfiguration.helio_host = config.get('helio', 'host')
     else:
         print('Error reading config file.')
 

@@ -15,22 +15,7 @@ class Errors:
         #     "error": []
         # }
         self.event_json = {
-            "in_process": [{
-                    "project_id": "123",
-                    "file_id": "456",
-                    "file_type": "schedule",
-                    "in_progress": True,
-                    "timestamp": "01-01-2020, 00:00:00",
-                    "error_message": None
-                },
-                {
-                    "project_id": "2",
-                    "file_id": None,
-                },
-                {
-                    "project_id": "3",
-                    "file_id": None,
-                }],
+            "in_process": [],
             "completed": [],
             "error": []
         }

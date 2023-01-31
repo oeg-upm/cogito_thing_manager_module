@@ -1,0 +1,86 @@
+@require(rdf, project_id, file_id, ontologies_shapes)
+<#assign jpath=handlers("JsonHandler")>
+<#assign rdf>
+@rdf
+</#assign>
+
+<#assign shape=providers("HttpProvider", {"url" : "@ontologies_shapes", "method" : "GET"})>
+
+
+<#-- Running the validation -->
+<#-- configure the action to output report in NT serialization -->
+<#assign config="{\"shape\" : \""+shape?js_string+"\", \"output-format\" : \"turtle\"  }">
+<@@action type="ShaclValidator" data=rdf conf=config; report>
+<#--  aggregate the RDF and the report into a variable-->
+<#assign rdf_report = rdf+"\n"+report>
+<#assign report = report>
+</@@action>
+
+<#--  Fetch and cast the RDF into NT serialization -->
+<#assign config = {"data-format" : "turtle", "output-format" : "nt"}>
+<@@action type="RdfCast" data=rdf conf=config; result>
+<#assign rdf_nt = result>
+</@@action>
+
+<#assign query>
+SELECT ?o WHERE {
+    ?s <http://www.w3.org/ns/shacl#conforms> ?o .
+}
+</#assign>
+<#assign config = '{"query" : "'+query+'" }'>
+<@@action type="SparqlEngine" data=rdf_report conf=config; result>
+<#list jpath.filter("$.*",result) as res>
+
+<#if res?contains("bindings")>
+<#if jpath.filter("$.bindings.*.o.value",res)?contains("true")>
+
+<#-- Split in chunks and execute post request -->
+<#assign e = rdf_nt?split("\n")>
+<#list e?chunk(20) as row>
+<#assign f = row?join("\n")>
+
+<#assign project_graph="INSERT DATA { GRAPH <https://data.cogito.iot.linkeddata.es/@project_id> { " + f + "} }">
+<#assign file_graph="INSERT DATA { GRAPH <https://data.cogito.iot.linkeddata.es/@project_id/@file_id> { " + f + "} }">
+
+<#assign project_graph="https://triplestore.cogito.iot.linkeddata.es/repositories/cogito-triplestore/statements?update="+ project_graph?url('ISO-8859-1')>
+<#assign file_graph="https://triplestore.cogito.iot.linkeddata.es/repositories/cogito-triplestore/statements?update="+ file_graph?url('ISO-8859-1')>
+
+<#assign project_dataset>
+{
+            "method": "POST",
+            "url": "[=project_graph]",
+            "body": ""
+}
+</#assign>
+
+<#assign file_dataset>
+{
+            "method": "POST",
+            "url": "[=file_graph]",
+            "body": ""
+}
+</#assign>
+
+<#assign dataset=providers("HttpProvider", project_dataset)>
+<#assign dataset=providers("HttpProvider", file_dataset)>
+</#list>
+Triples Stored Properly
+<#else>
+<#assign query> 
+SELECT ?instance ?type ?path ?message WHERE { 
+    ?subject <http://www.w3.org/ns/shacl#focusNode> ?instance .
+    ?instance a ?type .
+    ?subject <http://www.w3.org/ns/shacl#resultPath> ?path .
+    ?subject <http://www.w3.org/ns/shacl#resultMessage> ?message .
+} 
+</#assign>
+<#assign config = '{"query" : "'+query+'" }'>
+<@@action type="SparqlEngine" data=rdf_report conf=config; result>
+[=result]
+</@@action>
+</#if>
+</#if>
+</#list>
+</@@action>
+
+

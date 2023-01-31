@@ -6,26 +6,34 @@
             {
                 "name" : "process",
                 "href" : "https://cogito.iot.linkeddata.es/def/process#"
+            },
+            {
+                "name" : "qual",
+                "href" : "https://cogito.iot.linkeddata.es/quality#"
+            },
+            {
+                "name" : "platform",
+                "href" : "https://cogito.iot.linkeddata.es/def/platform#"
             }
         ],
-        "type" : "process:Process",
+        "type": "qual:InformationResource",
         "title" : "Schedule File",
-        "description" : "Schedule file associated to project",
+        "description" : "Schedule file associated to project  !! external_id !! ",
 
         "properties" : [
             {
-                "name": "hasKnowledgeGraph",
-                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "name": "platform:hasKnowledgeGraph",
+                "href": "https://data.cogito.iot.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
                 "type": "text/turtle"
             },
             {
-                "name" : "relatedToProject",
+                "name" : "platform:relatedToProject",
                 "href" : " ?? s ?? ",
                 "type" : "text/turtle"
             },
             {
-                "name" : "relatedToProject_GoodPractice",
-                "href" : "https://data.cogito.linkeddata.es/resources/project/ !! external_id !! ",
+                "name" : "platform:relatedToProject_GoodPractice",
+                "href" : "https://data.cogito.iot.linkeddata.es/resources/project/ !! external_id !! ",
                 "type" : "text/turtle"
             }
         ],
@@ -36,8 +44,8 @@
 
         "links" : [
             {
-                "rel" : "relatedToProject",
-                "href" : "https://data.cogito.linkeddata.es/api/things/ !! external_id !! ",
+                "rel" : "platform:relatedTD",
+                "href" : "https://data.cogito.iot.linkeddata.es/tdd/api/things/ !! external_id !! ",
                 "type" : "application/td+json"
             }
         ]

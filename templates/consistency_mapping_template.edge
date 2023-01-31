@@ -1,0 +1,72 @@
+@require(project_id, consistency_shape)
+<#assign jpath=handlers("JsonHandler")>
+<#assign rdf=providers("HttpProvider", {"url" : "https://triplestore.cogito.iot.linkeddata.es/repositories/cogito-triplestore/rdf-graphs/service?graph=https%3A%2F%2Fdata.cogito.iot.linkeddata.es%2@project_id", "method" : "GET"})>
+<#assign shape=providers("HttpProvider", {"url" : "@consistency_shape", "method" : "GET"})>
+
+<#-- Running the validation -->
+<#-- configure the action to output report in NT serialization -->
+<#assign config="{\"shape\" : \""+shape?js_string+"\", \"output-format\" : \"nt\"  }">
+<@@action type="ShaclValidator" data=rdf conf=config; report>
+<#--  aggregate the RDF and the report into a variable-->
+<#assign rdf = rdf+"\n"+report>
+<#assign report = report>
+</@@action>
+
+<#--  DONE: change the query to return the number of instances in the dataset that are not conforming, i.e., not passing the validation, due to the new restrictions defined in the shape -->
+<#assign query> 
+SELECT ?instance ?type ?path ?message WHERE { 
+    ?subject <http://www.w3.org/ns/shacl#focusNode> ?instance .
+    ?instance a ?type .
+    ?subject <http://www.w3.org/ns/shacl#resultPath> ?path .
+    ?subject <http://www.w3.org/ns/shacl#resultMessage> ?message .
+} 
+</#assign>
+<#assign config = '{"query" : "'+query+'" }'>
+<@@action type="SparqlEngine" data=rdf conf=config; result>
+<#list jpath.filter("$.*",result) as res>
+<#if res?contains("bindings")>
+<#assign bindings=res>
+</#if>
+</#list>
+</@@action>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>GRAPH CONSISTENCY</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+</head>
+  <body>
+    <h1>GRAPH CONSISTENCY</h1>
+<div style="overflow-x:auto;">
+<table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="col-md-2">Instance</th>
+          <th class="col-md-2">Type</th>
+          <th class="col-md-2">Path</th>
+          <th class="col-md-2">Message </th>
+        </tr>
+      </thead>
+      <tbody>
+<#assign count = 0>
+<#list jpath.filter("$.bindings",bindings) as b>
+    <#assign count = count +1>
+        <tr id="tr[=count]">
+          <td>[=jpath.filter("$.instance.value",b)]</td>
+          <td>[=jpath.filter("$.type.value",b)]</td>
+          <td>[=jpath.filter("$.path.value",b)]</td>
+          <td>[=jpath.filter("$.message.value",b)]</td>
+        </tr>
+    </#list>
+    </tbody>
+    </table>
+</div>
+  </body>
+</html>

@@ -18,7 +18,7 @@ class TD:
         self.__links = {"links" : []} # List of dicts
         self.__security = {"security" : None} # List of dicts
         self.__template_path = "./templates/"
-        self.__template_name = "td.template.txt"
+        self.__template_name = "td.template.edge"
         self.__render_info = {}
     
     def set_info_to_render(self): # concatenate all info to info_to_render with predefined variables

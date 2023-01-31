@@ -10,20 +10,24 @@
             {
                 "name" : "bot",
                 "href" : "https://w3id.org/bot#"
+            },
+            {
+                "name" : "platform",
+                "href" : "https://cogito.iot.linkeddata.es/def/platform#"
             }
         ],
-        "type" : "bot:Element",
+        "type" : "facility:Element",
         "title" : " ?? label ?? ",
-        "description" : "Element from IFC File",
+        "description" : "Element from IFC File associated to project  !! external_id !! ",
 
         "properties" : [
             {
-                "name": "refersToKnowledgeGraph",
-                "href": "https://data.cogito.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
+                "name": "platform:refersToKnowledgeGraph",
+                "href": "https://data.cogito.iot.linkeddata.es/resources/ !! external_id !! / !! external_file_id !! ",
                 "type": "text/turtle"
             },
             {
-                "name" : "hasValueInGraph",
+                "name" : "platform:hasIRI",
                 "href" : " ?? s ?? ",
                 "type" : "text/turtle"
             }
@@ -33,6 +37,12 @@
 
         "events" : [],
 
-        "links" : []
+        "links" : [
+            {
+                "rel" : "platform:relatedTD",
+                "href" : "https://data.cogito.iot.linkeddata.es/tdd/api/things/ !! external_id !! ",
+                "type" : "application/td+json"
+            }
+        ]
     }
 }
